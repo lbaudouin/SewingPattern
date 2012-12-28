@@ -11,8 +11,12 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    point2d.cpp \
+    edge.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    point2d.h \
+    edge.h
 
 FORMS    += mainwindow.ui
