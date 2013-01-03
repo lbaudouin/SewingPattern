@@ -52,7 +52,7 @@ static double TwoPi = 2.0 * Pi;
 Edge::Edge(Point2D *sourceNode, Point2D *destNode)
     : arrowSize(10)
 {
-    setAcceptedMouseButtons(0);
+    setAcceptedMouseButtons(Qt::RightButton);
     source = sourceNode;
     dest = destNode;
     source->addEdge(this);
@@ -72,6 +72,13 @@ Point2D *Edge::destNode() const
     return dest;
 }
 //! [1]
+
+
+void Edge::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    qDebug() << "Edge selected";
+    QGraphicsItem::mousePressEvent(event);
+}
 
 //! [2]
 void Edge::adjust()
@@ -144,7 +151,7 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 
     QPointF textPose =  (line.p1()+line.p2())/2.0;
     //painter->rotate(-angle*180.0/Pi);
-    painter->drawText( textPose ,QString::number(line.length()));
+    //painter->drawText( textPose ,QString::number(line.length()));
     //painter->rotate(angle*180.0/Pi);
     painter->setBrush(Qt::black);
     painter->drawPolygon(QPolygonF() << line.p1() << sourceArrowP1 << sourceArrowP2);

@@ -42,6 +42,8 @@
 #define EDGE_H
 
 #include <QGraphicsItem>
+#include <QGraphicsSceneMouseEvent>
+#include <QDebug>
 
 class Point2D;
 
@@ -60,6 +62,7 @@ public:
     int type() const { return Type; }
     
 protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     

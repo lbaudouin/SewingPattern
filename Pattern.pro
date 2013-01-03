@@ -13,10 +13,14 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     point2d.cpp \
-    edge.cpp
+    edge.cpp \
+    meshing.cpp \
+    patternscene.cpp
 
 HEADERS  += mainwindow.h \
     point2d.h \
-    edge.h
+    edge.h \
+    meshing.h \
+    patternscene.h
 
 FORMS    += mainwindow.ui

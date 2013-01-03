@@ -1,7 +1,7 @@
 #include "point2d.h"
 
-Point2D::Point2D(QGraphicsView *graphWidget)
-    : graph(graphWidget)
+Point2D::Point2D(QGraphicsView *graphWidget, int id)
+    : graph(graphWidget) , widget(new Point2DWidget), id_(id)
 {
     setFlag(ItemIsMovable);
     setFlag(ItemSendsGeometryChanges);
@@ -51,6 +51,11 @@ void Point2D::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
 
     painter->setPen(QPen(Qt::black, 0));
     painter->drawEllipse(-10, -10, 20, 20);
+    if(id_<10){
+        painter->drawText(QRectF(-5,-10,10,20),QString::number(id_));
+    }else{
+        painter->drawText(QRectF(-10,-10,20,20),QString::number(id_));
+    }
 }
 
 QVariant Point2D::itemChange(GraphicsItemChange change, const QVariant &value)
@@ -64,5 +69,6 @@ QVariant Point2D::itemChange(GraphicsItemChange change, const QVariant &value)
         break;
     };
 
+    widget->move();
     return QGraphicsItem::itemChange(change, value);
 }
