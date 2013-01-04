@@ -4,6 +4,9 @@
 #include <QtGui>
 #include <QGraphicsItem>
 #include <QGraphicsView>
+
+class Edge;
+
 #include "edge.h"
 #include <QDebug>
 
@@ -24,9 +27,10 @@ signals:
 class Point2D : public QGraphicsItem
 {
 public:
-    Point2D(QGraphicsView *graphWidget, int id);
+    Point2D(QGraphicsView *graphWidget, int id = -1);
 
     void addEdge(Edge *edge);
+    void removeEdge(Edge *edge);
     QRectF boundingRect() const;
     QPainterPath shape() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

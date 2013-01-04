@@ -108,7 +108,7 @@ void MainWindow::addPoint(QPointF pt)
     currentPoly.push_back(p);
     scene->addItem(p);
     if(currentPoly.size()>1)
-        scene->addItem( new Edge(currentPoly.at(currentPoly.size()-2),p) );
+        scene->addItem( new Edge(currentPoly.at(currentPoly.size()-2),p,ui->graphicsView) );
     p->setPos(pt);
 }
 
@@ -117,6 +117,6 @@ void MainWindow::closePoly()
     if(currentPoly.size()<=2)
         return;
     polys << currentPoly;
-    scene->addItem( new Edge(currentPoly.at(0),currentPoly.at(currentPoly.size()-1)) );
+    scene->addItem( new Edge(currentPoly.at(0),currentPoly.at(currentPoly.size()-1),ui->graphicsView) );
     currentPoly.clear();
 }

@@ -45,13 +45,16 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QDebug>
 
+#include <QPainter>
+#include "point2d.h"
+
 class Point2D;
 
 //! [0]
 class Edge : public QGraphicsItem
 {
 public:
-    Edge(Point2D *sourceNode, Point2D *destNode);
+    Edge(Point2D *sourceNode, Point2D *destNode, QGraphicsView *graphWidget);
 
     Point2D *sourceNode() const;
     Point2D *destNode() const;
@@ -61,6 +64,10 @@ public:
     enum { Type = UserType + 2 };
     int type() const { return Type; }
     
+    double distance(QPointF p);
+
+    QPointF proj(QPointF p);
+
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     QRectF boundingRect() const;
@@ -72,6 +79,9 @@ private:
     QPointF sourcePoint;
     QPointF destPoint;
     qreal arrowSize;
+
+    bool selected_;
+    QGraphicsView *graph;
 };
 //! [0]
 

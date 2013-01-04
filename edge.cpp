@@ -38,21 +38,18 @@
 **
 ****************************************************************************/
 
-#include <QPainter>
 
 #include "edge.h"
-#include "point2d.h"
-
 #include <math.h>
 
 static const double Pi = 3.14159265358979323846264338327950288419717;
 static double TwoPi = 2.0 * Pi;
 
 //! [0]
-Edge::Edge(Point2D *sourceNode, Point2D *destNode)
-    : arrowSize(10)
+Edge::Edge(Point2D *sourceNode, Point2D *destNode, QGraphicsView *graphWidget)
+    : arrowSize(10) , selected_(false), graph(graphWidget)
 {
-    setAcceptedMouseButtons(Qt::RightButton);
+    setAcceptedMouseButtons( Qt::LeftButton | Qt::RightButton );
     source = sourceNode;
     dest = destNode;
     source->addEdge(this);
@@ -76,7 +73,30 @@ Point2D *Edge::destNode() const
 
 void Edge::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    qDebug() << "Edge selected";
+    if(event->button()==Qt::LeftButton){
+        if(distance(event->scenePos())<10.0){
+            selected_ = !selected_;
+            this->update(boundingRect());
+        }
+    }
+    if(event->button()==Qt::RightButton){
+        Point2D *p = new Point2D(graph);
+        p->setPos(proj(event->scenePos()));
+        this->scene()->addItem(p);
+
+        //p->addEdge(this);
+
+        source->removeEdge(this);
+        dest->removeEdge(this);
+
+        this->scene()->addItem( new Edge(source,p,graph) );
+        this->scene()->addItem( new Edge(p,dest,graph) );
+
+        this->scene()->removeItem(this);
+        //dest = p;
+        //destPoint = p->pos();
+
+    }
     QGraphicsItem::mousePressEvent(event);
 }
 
@@ -130,7 +150,11 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 
 //! [5]
     // Draw the line itself
-    painter->setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    if(selected_){
+        painter->setPen(QPen(Qt::red, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    }else{
+        painter->setPen(QPen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    }
     painter->drawLine(line);
 //! [5]
 
@@ -158,3 +182,27 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
     painter->drawPolygon(QPolygonF() << line.p2() << destArrowP1 << destArrowP2);
 }
 //! [6]
+
+double Edge::distance(QPointF pt)
+{
+    if(sourcePoint==destPoint)
+        return QLineF(sourcePoint,pt).length();
+
+    return QLineF(proj(pt),pt).length();
+}
+
+
+QPointF Edge::proj(QPointF pt)
+{
+    if(sourcePoint==destPoint)
+        return sourcePoint;
+
+    QLineF line(sourcePoint,destPoint);
+    QPointF p;
+
+    QLineF normal = line.normalVector();
+    normal.setP2( normal.p2() - normal.p1() + pt);
+    normal.setP1( pt );
+    line.intersect(normal,&p);
+    return p;
+}

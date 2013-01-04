@@ -15,6 +15,12 @@ void Point2D::addEdge(Edge *edge)
     edge->adjust();
 }
 
+void Point2D::removeEdge(Edge *edge)
+{
+    edgeList.removeAll(edge);
+    edge->adjust();
+}
+
 QRectF Point2D::boundingRect() const
 {
     qreal adjust = 2;
