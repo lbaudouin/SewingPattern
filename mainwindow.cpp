@@ -3,7 +3,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow), first(true)
 {
     ui->setupUi(this);
     QPushButton *button = new QPushButton("New Polygon");
@@ -87,12 +87,16 @@ void MainWindow::pressTest()
         scene->removeItem(polyDraw.at(i));
     polyDraw.clear();
 
-    for(int k=0;k<polys.size();k++){
-        QPolygonF poly;
-        for(int i=0;i<polys.at(k).size();i++)
-            poly << polys.at(k).at(i)->pos();
+    polys.clear();
+    for(int i=0;i<allref.size();i++)
+        polys << allref.at(i)->getPoly();
 
-        Meshing mesh(poly,25.0);
+    for(int k=0;k<polys.size();k++){
+        /*QPolygonF poly;
+        for(int i=0;i<polys.at(k).size();i++)
+            poly << polys.at(k).at(i)->pos();*/
+
+        Meshing mesh(polys.at(k),25.0);
         QList<QPolygonF> triangles = mesh.getMesh();
 
         for(int i=0;i<triangles.size();i++){
@@ -103,20 +107,28 @@ void MainWindow::pressTest()
 
 void MainWindow::addPoint(QPointF pt)
 {
-    Point2D *p = new Point2D(ui->graphicsView,points.size());
+    if(first){
+        ref = new Point2D(ui->graphicsView,0);
+        ref->setPos(pt);
+        scene->addItem(ref);
+        first = false;
+        allref << ref;
+    }else{
+        ref->addPoint(pt);
+    }
+    /*Point2D *p = new Point2D(ui->graphicsView,points.size());
     points << p;
     currentPoly.push_back(p);
     scene->addItem(p);
     if(currentPoly.size()>1)
         scene->addItem( new Edge(currentPoly.at(currentPoly.size()-2),p,ui->graphicsView) );
-    p->setPos(pt);
+    p->setPos(pt);*/
 }
 
 void MainWindow::closePoly()
 {
-    if(currentPoly.size()<=2)
+    if(first)
         return;
-    polys << currentPoly;
-    scene->addItem( new Edge(currentPoly.at(0),currentPoly.at(currentPoly.size()-1),ui->graphicsView) );
-    currentPoly.clear();
+    scene->addItem( new Edge(ref,ref->getLast(),ui->graphicsView) );
+    first = true;
 }

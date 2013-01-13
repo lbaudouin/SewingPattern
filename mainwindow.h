@@ -22,11 +22,14 @@ public:
 private:
     Ui::MainWindow *ui;
     QList<Point2D*> currentPoly;
-    QList< QList<Point2D*> > polys;
+    QList< QPolygonF > polys;
     PatternScene *scene;
     int n;
     QList<Point2D*> points;
 
+    QList<Point2D*> allref;
+    Point2D *ref;
+    bool first;
 
     QList<QGraphicsPolygonItem*> polyDraw;
 

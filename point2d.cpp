@@ -1,7 +1,7 @@
 #include "point2d.h"
 
 Point2D::Point2D(QGraphicsView *graphWidget, int id)
-    : graph(graphWidget) , widget(new Point2DWidget), id_(id)
+    : graph(graphWidget) , widget(new Point2DWidget), id_(id), sourceEdgeCreated(false), destEdgeCreated(false)
 {
     setFlag(ItemIsMovable);
     setFlag(ItemSendsGeometryChanges);
@@ -13,6 +13,18 @@ void Point2D::addEdge(Edge *edge)
 {
     edgeList << edge;
     edge->adjust();
+}
+
+void Point2D::addSrcEdge(Edge *edge)
+{
+    sourceEdge = edge;
+    sourceEdgeCreated = true;
+}
+
+void Point2D::addDestEdge(Edge *edge)
+{
+    destEdge = edge;
+    destEdgeCreated = true;
 }
 
 void Point2D::removeEdge(Edge *edge)
@@ -68,8 +80,10 @@ QVariant Point2D::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     switch (change) {
     case ItemPositionHasChanged:
-        foreach (Edge *edge, edgeList)
-            edge->adjust();
+        if(sourceEdgeCreated) sourceEdge->adjust();
+        if(destEdgeCreated) destEdge->adjust();
+        //foreach (Edge *edge, edgeList)
+        //    edge->adjust();
         break;
     default:
         break;
@@ -77,4 +91,42 @@ QVariant Point2D::itemChange(GraphicsItemChange change, const QVariant &value)
 
     widget->move();
     return QGraphicsItem::itemChange(change, value);
+}
+
+void Point2D::addPoint(QPointF pt)
+{
+    if(destEdgeCreated){
+        destEdge->destNode()->addPoint(pt);
+    }else{
+        Point2D *p = new Point2D(this->graph,this->id_+1);
+        p->setPos(pt);
+        this->graph->scene()->addItem(p);
+        this->graph->scene()->addItem( new Edge(this,p,this->graph) );
+    }
+}
+
+QPolygonF Point2D::getPoly()
+{
+    QPolygonF poly;
+    Point2D *p = this;
+    poly << p->pos();
+    while(p->isDest()){
+        p = p->destEdge->destNode();
+        poly << p->pos();
+        if(p==this)
+            break;
+    }
+    qDebug() << poly.size();
+    return poly;
+}
+
+Point2D* Point2D::getLast()
+{
+    Point2D *p = this;
+    while(p->isDest()){
+        p = p->destEdge->destNode();
+        if(p==this)
+            break;
+    }
+    return p;
 }

@@ -37,10 +37,26 @@ public:
 
     Point2DWidget *widget;
 
+    void addPoint(QPointF pt);
+
+    void addDestEdge(Edge *edge);
+    void addSrcEdge(Edge *edge);
+
+    QPolygonF getPoly();
+
+    inline bool isSource(){ return sourceEdgeCreated;}
+    inline bool isDest(){ return destEdgeCreated;}
+
+    Point2D *getLast();
+
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 private:
+    bool sourceEdgeCreated,destEdgeCreated;
+    Edge *sourceEdge,*destEdge;
+
+
     QList<Edge *> edgeList;
     QGraphicsView *graph;
     int id_;

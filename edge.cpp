@@ -52,8 +52,8 @@ Edge::Edge(Point2D *sourceNode, Point2D *destNode, QGraphicsView *graphWidget)
     setAcceptedMouseButtons( Qt::LeftButton | Qt::RightButton );
     source = sourceNode;
     dest = destNode;
-    source->addEdge(this);
-    dest->addEdge(this);
+    source->addDestEdge(this);
+    dest->addSrcEdge(this);
     adjust();
 }
 //! [0]
@@ -92,6 +92,7 @@ void Edge::mousePressEvent(QGraphicsSceneMouseEvent *event)
         this->scene()->addItem( new Edge(source,p,graph) );
         this->scene()->addItem( new Edge(p,dest,graph) );
 
+        this->ungrabMouse();
         this->scene()->removeItem(this);
         //dest = p;
         //destPoint = p->pos();
