@@ -15,12 +15,18 @@ SOURCES += main.cpp\
     point2d.cpp \
     edge.cpp \
     meshing.cpp \
-    patternscene.cpp
+    patternscene.cpp \
+    mypoint.cpp \
+    myedge.cpp \
+    mypolygon.cpp
 
 HEADERS  += mainwindow.h \
     point2d.h \
     edge.h \
     meshing.h \
-    patternscene.h
+    patternscene.h \
+    mypoint.h \
+    myedge.h \
+    mypolygon.h
 
 FORMS    += mainwindow.ui

@@ -69,12 +69,15 @@ public:
     QPointF proj(QPointF p);
 
 protected:
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     
 private:
     Point2D *source, *dest;
+
+    QMenu *myContextMenu;
 
     QPointF sourcePoint;
     QPointF destPoint;

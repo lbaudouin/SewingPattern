@@ -6,6 +6,11 @@
 #include "edge.h"
 #include "meshing.h"
 #include "patternscene.h"
+#include <QDebug>
+
+#include "mypolygon.h"
+#include "mypoint.h"
+#include "myedge.h"
 
 namespace Ui {
 class MainWindow;
@@ -18,6 +23,10 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+protected:
+    void loadFile(QString filename);
+    void saveFile(QString filename);
     
 private:
     Ui::MainWindow *ui;
@@ -32,6 +41,9 @@ private:
     bool first;
 
     QList<QGraphicsPolygonItem*> polyDraw;
+
+    QMenu *nodeMenu,*edgeMenu;
+    QAction *deleteAction,*splitAction;
 
 private slots:
     void pressTest();

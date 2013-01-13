@@ -207,3 +207,10 @@ QPointF Edge::proj(QPointF pt)
     line.intersect(normal,&p);
     return p;
 }
+
+void Edge::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+{
+    scene()->clearSelection();
+    setSelected(true);
+    myContextMenu->exec(event->screenPos());
+}

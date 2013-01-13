@@ -19,59 +19,22 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->graphicsView->setRenderHint(QPainter::Antialiasing);
     ui->graphicsView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
-    /*p2d_1 = new Point2D(ui->graphicsView,0);
-    p2d_2 = new Point2D(ui->graphicsView,1);
-    p2d_3 = new Point2D(ui->graphicsView,2);
-    p2d_4 = new Point2D(ui->graphicsView,3);
-    p2d_5 = new Point2D(ui->graphicsView,4);
-    p2d_6 = new Point2D(ui->graphicsView,5);
 
-    scene->addItem(p2d_1);
-    scene->addItem(p2d_2);
-    scene->addItem(p2d_3);
-    scene->addItem(p2d_4);
-    scene->addItem(p2d_5);
-    scene->addItem(p2d_6);
+    nodeMenu = new QMenu(this);
+    deleteAction = new QAction("Delete",this);
+    deleteAction->setShortcut(tr("Delete"));
+    deleteAction->setStatusTip(tr("Delete item from diagram"));
+    //connect(deleteAction, SIGNAL(triggered()), this, SLOT(deleteItem()));
+    nodeMenu->addAction( deleteAction );
 
-    scene->addItem( new Edge(p2d_1,p2d_2) );
-    scene->addItem( new Edge(p2d_2,p2d_3) );
-    scene->addItem( new Edge(p2d_3,p2d_4) );
-    scene->addItem( new Edge(p2d_4,p2d_5) );
-    scene->addItem( new Edge(p2d_5,p2d_6) );
-    scene->addItem( new Edge(p2d_6,p2d_1) );
+    edgeMenu = new QMenu(this);
+    edgeMenu->addAction( deleteAction );
+    splitAction = new QAction("Split",this);
+    //splitAction->setShortcut(tr("Split"));
+    splitAction->setStatusTip(tr("Split edge here"));
+    //connect(splitAction, SIGNAL(triggered()), this, SLOT(deleteItem()));
+    edgeMenu->addAction( splitAction );
 
-    /*p2d_1->setPos(0, 0);
-    p2d_2->setPos(-100, -50);
-    p2d_3->setPos(-100, 100);
-    p2d_4->setPos(-50, 100);
-    p2d_5->setPos(-50, 35);
-    p2d_6->setPos(0, 25);
-
-    /*connect(p2d_1->widget,SIGNAL(moved()),this,SLOT(pressTest()));
-    connect(p2d_2->widget,SIGNAL(moved()),this,SLOT(pressTest()));
-    connect(p2d_3->widget,SIGNAL(moved()),this,SLOT(pressTest()));
-    connect(p2d_4->widget,SIGNAL(moved()),this,SLOT(pressTest()));
-    connect(p2d_5->widget,SIGNAL(moved()),this,SLOT(pressTest()));
-    connect(p2d_6->widget,SIGNAL(moved()),this,SLOT(pressTest()));
-
-
-    /*p2d_1->setPos(0, 0);
-    p2d_2->setPos(-100, -100);
-    p2d_3->setPos(-150, -50);
-    p2d_4->setPos(-75, 50);
-    p2d_5->setPos(-50, 100);
-    p2d_6->setPos(-25, 50);*/
-
-
-
-    n = 1;
-
-    /*p2d_1->setPos(1000, 1000);
-    p2d_2->setPos(1000, 1000);
-    p2d_3->setPos(1000, 1000);
-    p2d_4->setPos(1000, 1000);
-    p2d_5->setPos(1000, 1000);
-    p2d_6->setPos(1000, 1000);*/
     connect(ui->buttonTest,SIGNAL(clicked()),this,SLOT(pressTest()));
     connect(scene,SIGNAL(middleClicked(QPointF)),this,SLOT(addPoint(QPointF)));
 }
@@ -107,6 +70,14 @@ void MainWindow::pressTest()
 
 void MainWindow::addPoint(QPointF pt)
 {
+    MyPoint *p = new MyPoint(nodeMenu,pt);
+    scene->addItem(p);
+    MyPoint *p2 = new MyPoint(nodeMenu,pt+QPointF(200,200));
+    scene->addItem(p2);
+    MyEdge *e = new MyEdge(p,p2,edgeMenu);
+    scene->addItem(e);
+
+    /*
     if(first){
         ref = new Point2D(ui->graphicsView,0);
         ref->setPos(pt);
@@ -115,7 +86,7 @@ void MainWindow::addPoint(QPointF pt)
         allref << ref;
     }else{
         ref->addPoint(pt);
-    }
+    }*/
     /*Point2D *p = new Point2D(ui->graphicsView,points.size());
     points << p;
     currentPoly.push_back(p);
@@ -131,4 +102,38 @@ void MainWindow::closePoly()
         return;
     scene->addItem( new Edge(ref,ref->getLast(),ui->graphicsView) );
     first = true;
+}
+
+void MainWindow::loadFile(QString filename)
+{
+    QFile file(filename);
+    if(file.open(QFile::ReadOnly)){
+        QTextStream in(&file);
+        while (!in.atEnd()) {
+            QString line = in.readLine();
+            if(line.isEmpty())
+                continue;
+            QStringList items = line.split(" ");
+
+            if(items.at(0)=="POLYGON"){
+                QString name;
+                for(int i=1;i<items.size();i++){
+                    name += items.at(i);
+                }
+                name = name.trimmed();
+            }
+            if(items.at(0)=="POINT"){
+                QPointF point;
+                point.setX( items.at(1).toDouble() );
+                point.setY( items.at(2).toDouble() );
+            }
+        }
+    }else{
+        qDebug() << "Error on file loading";
+    }
+}
+
+void MainWindow::saveFile(QString filename)
+{
+
 }
