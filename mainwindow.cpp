@@ -72,10 +72,14 @@ void MainWindow::addPoint(QPointF pt)
 {
     MyPoint *p = new MyPoint(nodeMenu,pt);
     scene->addItem(p);
-    MyPoint *p2 = new MyPoint(nodeMenu,pt+QPointF(200,200));
-    scene->addItem(p2);
-    MyEdge *e = new MyEdge(p,p2,edgeMenu);
-    scene->addItem(e);
+
+    if(!listPoint.isEmpty()){
+        MyPoint *p2 = listPoint.at(listPoint.size()-1);
+        MyEdge *e = new MyEdge(p,p2,edgeMenu);
+        scene->addItem(e);
+    }
+
+    listPoint.push_back(p);
 
     /*
     if(first){

@@ -1,14 +1,18 @@
 #include "myedge.h"
 
-MyEdge::MyEdge(MyPoint *src, MyPoint *dest, QMenu *contextMenu)//, QObject *parent, QGraphicsScene *scene) : QGraphicsItem(parent,scene)
+MyEdge::MyEdge(MyPoint *src, MyPoint *dest, QMenu *contextMenu)
 {
     src_ = src;
     dest_ = dest;
+    src_->setDestEdge(this);
+    dest_->setSrcEdge(this);
     myContextMenu = contextMenu;
+    adjust();
 }
 
 void MyEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
+    Q_UNUSED(option);
     painter->setPen(Qt::green);
     painter->drawLine(src_->pos(),dest_->pos());
 }
@@ -72,4 +76,9 @@ QPointF MyEdge::proj(QPointF pt)
 QPointF MyEdge::selectedPoint()
 {
     return selectedPoint_;
+}
+
+void MyEdge::adjust()
+{
+    prepareGeometryChange();
 }

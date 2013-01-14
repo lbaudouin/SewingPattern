@@ -42,6 +42,7 @@ private:
 
     QList<QGraphicsPolygonItem*> polyDraw;
 
+    QList<MyPoint*> listPoint;
     QMenu *nodeMenu,*edgeMenu;
     QAction *deleteAction,*splitAction;
 

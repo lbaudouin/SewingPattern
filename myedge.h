@@ -17,13 +17,15 @@ class MyEdge : public QGraphicsItem
 {
     //Q_OBJECT
 public:
-    explicit MyEdge(MyPoint *src, MyPoint *dest, QMenu *contextMenu);//, QObject *parent = 0, QGraphicsScene *scene = 0);
+    explicit MyEdge(MyPoint *src, MyPoint *dest, QMenu *contextMenu);
     QRectF boundingRect() const;
 
     QPointF proj(QPointF p);
     double distance(QPointF p);
 
     QPointF selectedPoint();
+
+    void adjust();
 
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
