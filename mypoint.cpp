@@ -1,7 +1,8 @@
 #include "mypoint.h"
 
-MyPoint::MyPoint(QMenu *contextMenu, QPointF pt) : srcEdge_(NULL), destEdge_(NULL)
+MyPoint::MyPoint(QPointF pt, int patternID, int pointID, QMenu *contextMenu) : srcEdge_(NULL), destEdge_(NULL), patternID_(patternID), pointID_(pointID)
 {
+    widget = new MyPointWidget(patternID,pointID);
     myContextMenu = contextMenu;
     setFlag(QGraphicsItem::ItemIsMovable, true);
     setFlag(QGraphicsItem::ItemIsSelectable, true);
@@ -51,6 +52,7 @@ QVariant MyPoint::itemChange(GraphicsItemChange change, const QVariant &value)
     case ItemPositionHasChanged:
         if(srcEdge_) srcEdge_->adjust();
         if(destEdge_) destEdge_->adjust();
+        widget->pointMoved(this->pos());
         break;
     default:
         break;

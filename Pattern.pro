@@ -18,7 +18,7 @@ SOURCES += main.cpp\
     patternscene.cpp \
     mypoint.cpp \
     myedge.cpp \
-    mypolygon.cpp
+    mypattern.cpp
 
 HEADERS  += mainwindow.h \
     point2d.h \
@@ -27,6 +27,6 @@ HEADERS  += mainwindow.h \
     patternscene.h \
     mypoint.h \
     myedge.h \
-    mypolygon.h
+    mypattern.h
 
 FORMS    += mainwindow.ui

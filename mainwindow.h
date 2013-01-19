@@ -8,7 +8,7 @@
 #include "patternscene.h"
 #include <QDebug>
 
-#include "mypolygon.h"
+#include "mypattern.h"
 #include "mypoint.h"
 #include "myedge.h"
 
@@ -42,14 +42,23 @@ private:
 
     QList<QGraphicsPolygonItem*> polyDraw;
 
+    QList<MyPoint*> allPoints_;
+    QList<MyEdge*> allEdges_;
     QList<MyPoint*> listPoint;
     QMenu *nodeMenu,*edgeMenu;
     QAction *deleteAction,*splitAction;
 
+
+    QList<MyPattern*> patterns_;
+
 private slots:
     void pressTest();
-    void addPoint(QPointF pt);
+    void addPoint(QPointF pt, int patternID, int pointID);
     void closePoly();
+    void pointMovedInScene(int patternID, int pointID, QPointF newPos);
+
+signals:
+    void pointMoved(int patternID, int pointID, QPointF newPos);
 };
 
 #endif // MAINWINDOW_H
