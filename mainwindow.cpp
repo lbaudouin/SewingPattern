@@ -10,14 +10,23 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(button,SIGNAL(clicked()),this,SLOT(closePoly()));
     ui->mainToolBar->addWidget(button);
 
+    GLWidget *gl = new GLWidget(0, 0);
+    gl->setClearColor(QColor(255,0,0));
+    QVBoxLayout *vlayout = new QVBoxLayout;
+    vlayout->addWidget(gl);
+    ui->tab_simu->setLayout(vlayout);
+
     scene = new PatternScene(ui->graphicsView);
     scene->setItemIndexMethod(QGraphicsScene::NoIndex);
-    scene->setSceneRect(-200, -200, 400, 400);
+    scene->setSceneRect(-1000, -1000, 2000, 2000);
     ui->graphicsView->setScene(scene);
     ui->graphicsView->setCacheMode(QGraphicsView::CacheBackground);
     ui->graphicsView->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     ui->graphicsView->setRenderHint(QPainter::Antialiasing);
     ui->graphicsView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    //ui->graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
+
+    scene->addPixmap( QPixmap("images/sample.png").scaledToWidth(640) )->setPos(-500,-500);
 
 
     nodeMenu = new QMenu(this);
@@ -35,8 +44,18 @@ MainWindow::MainWindow(QWidget *parent) :
     //connect(splitAction, SIGNAL(triggered()), this, SLOT(deleteItem()));
     edgeMenu->addAction( splitAction );
 
+    polyMenu = new QMenu(this);
+    polyMenu->addAction( deleteAction );
+
+    QPolygonF po;
+    po << QPointF(0,0) << QPointF(100,0) << QPointF(100,100) << QPointF(0,100)  << QPointF(50,50);
+
+    MyPolygon *p = new MyPolygon(po,polyMenu);
+    p->setColor(Qt::blue);
+    scene->addItem(p);
+
     connect(ui->buttonTest,SIGNAL(clicked()),this,SLOT(pressTest()));
-    connect(scene,SIGNAL(middleClicked(QPointF)),this,SLOT(addPoint(QPointF)));
+    //connect(scene,SIGNAL(middleClicked(QPointF)),this,SLOT(addPoint(QPointF)));
 
    /* MyPattern p(0,"Test pattern");
     p.addPoint(0,QPointF(0,0));
@@ -56,11 +75,11 @@ MainWindow::MainWindow(QWidget *parent) :
         QList<int> keys = pts.keys();
         for(int i=0;i<keys.size();i++)
             allPoints_ << addPoint(pts[keys.at(i)],pattern->id_,keys.at(i));
-        for(int i=0;i<edges.size();i++){
+        /*for(int i=0;i<edges.size();i++){
             MyPoint *p1;
             MyPoint *p2;
             allEdges_ << new MyEdge(p1,p2,edgeMenu);
-        }
+        }*/
     }
 }
 
@@ -97,7 +116,7 @@ void MainWindow::pressTest()
     }
 }
 
-void MainWindow::addPoint(QPointF pt, int patternID, int pointID)
+MyPoint* MainWindow::addPoint(QPointF pt, int patternID, int pointID)
 {
     MyPoint *p = new MyPoint(pt,patternID,pointID,nodeMenu);
     connect(p->widget,SIGNAL(moved(int,int,QPointF)),this,SLOT(pointMovedInScene(int,int,QPointF)));
@@ -111,23 +130,7 @@ void MainWindow::addPoint(QPointF pt, int patternID, int pointID)
 
     listPoint.push_back(p);
 
-    /*
-    if(first){
-        ref = new Point2D(ui->graphicsView,0);
-        ref->setPos(pt);
-        scene->addItem(ref);
-        first = false;
-        allref << ref;
-    }else{
-        ref->addPoint(pt);
-    }*/
-    /*Point2D *p = new Point2D(ui->graphicsView,points.size());
-    points << p;
-    currentPoly.push_back(p);
-    scene->addItem(p);
-    if(currentPoly.size()>1)
-        scene->addItem( new Edge(currentPoly.at(currentPoly.size()-2),p,ui->graphicsView) );
-    p->setPos(pt);*/
+    return p;
 }
 
 void MainWindow::closePoly()

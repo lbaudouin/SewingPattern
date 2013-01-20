@@ -4,6 +4,7 @@
 #include <QtGui>
 #include <QGraphicsItem>
 #include <QGraphicsScene>
+#include <QPainter>
 #include <QMenu>
 #include <QGraphicsSceneContextMenuEvent>
 

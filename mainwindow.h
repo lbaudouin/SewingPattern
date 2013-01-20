@@ -8,9 +8,12 @@
 #include "patternscene.h"
 #include <QDebug>
 
+#include "graphicsview.h"
 #include "mypattern.h"
+#include "mypolygon.h"
 #include "mypoint.h"
 #include "myedge.h"
+#include "glwidget.h"
 
 namespace Ui {
 class MainWindow;
@@ -45,7 +48,7 @@ private:
     QList<MyPoint*> allPoints_;
     QList<MyEdge*> allEdges_;
     QList<MyPoint*> listPoint;
-    QMenu *nodeMenu,*edgeMenu;
+    QMenu *nodeMenu,*edgeMenu,*polyMenu;
     QAction *deleteAction,*splitAction;
 
 
@@ -53,7 +56,7 @@ private:
 
 private slots:
     void pressTest();
-    void addPoint(QPointF pt, int patternID, int pointID);
+    MyPoint* addPoint(QPointF pt, int patternID, int pointID);
     void closePoly();
     void pointMovedInScene(int patternID, int pointID, QPointF newPos);
 

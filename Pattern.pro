@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui opengl
 
 TARGET = Pattern
 TEMPLATE = app
@@ -18,7 +18,11 @@ SOURCES += main.cpp\
     patternscene.cpp \
     mypoint.cpp \
     myedge.cpp \
-    mypattern.cpp
+    mypattern.cpp \
+    tools.cpp \
+    glwidget.cpp \
+    mypolygon.cpp \
+    graphicsview.cpp
 
 HEADERS  += mainwindow.h \
     point2d.h \
@@ -27,6 +31,10 @@ HEADERS  += mainwindow.h \
     patternscene.h \
     mypoint.h \
     myedge.h \
-    mypattern.h
+    mypattern.h \
+    tools.h \
+    glwidget.h \
+    mypolygon.h \
+    graphicsview.h
 
 FORMS    += mainwindow.ui
