@@ -43,9 +43,15 @@ MainWindow::MainWindow(QWidget *parent) :
     splitAction->setStatusTip(tr("Split edge here"));
     //connect(splitAction, SIGNAL(triggered()), this, SLOT(deleteItem()));
     edgeMenu->addAction( splitAction );
+    transformAction = new QAction("Split",this);
+    edgeMenu->addAction( transformAction );
+
+
 
     polyMenu = new QMenu(this);
     polyMenu->addAction( deleteAction );
+    closeAction = new QAction("Close Polygon",this);
+    polyMenu->addAction( closeAction );
 
     QPolygonF po;
     po << QPointF(0,0) << QPointF(100,0) << QPointF(100,100) << QPointF(0,100)  << QPointF(50,50);

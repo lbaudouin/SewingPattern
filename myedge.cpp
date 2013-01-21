@@ -7,6 +7,7 @@ MyEdge::MyEdge(MyPoint *src, MyPoint *dest, QMenu *contextMenu)
     src_->setDestEdge(this);
     dest_->setSrcEdge(this);
     myContextMenu = contextMenu;
+    setZValue(1);
     adjust();
 }
 

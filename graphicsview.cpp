@@ -11,6 +11,8 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         setCursor(Qt::OpenHandCursor);
         pt_ = event->posF();
         myDragMode = true;
+    }else{
+        QGraphicsView::mousePressEvent(event);
     }
 }
 
@@ -19,15 +21,18 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
 {
     unsetCursor();
     myDragMode = false;
+    QGraphicsView::mouseReleaseEvent(event);
 }
 
 void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     if(myDragMode){
-        double speed = 0.1;
         QPointF delta = event->pos() - pt_;
-        horizontalScrollBar()->setValue(horizontalScrollBar()->value() - speed*delta.x());
-        verticalScrollBar()->setValue(verticalScrollBar()->value() - speed*delta.y());
+        pt_ = event->posF();
+        horizontalScrollBar()->setValue(horizontalScrollBar()->value() - delta.x());
+        verticalScrollBar()->setValue(verticalScrollBar()->value() - delta.y());
+    }else{
+        QGraphicsView::mouseMoveEvent(event);
     }
 }
 

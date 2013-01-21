@@ -42,12 +42,16 @@ protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private:
     QMenu *myContextMenu;
 
     MyEdge *srcEdge_,*destEdge_;
     int patternID_,pointID_;
+
+    bool select_;
 
 signals:
     

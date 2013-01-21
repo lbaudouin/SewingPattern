@@ -5,8 +5,18 @@ MyPolygon::MyPolygon(QPolygonF poly, QMenu *contextMenu)
     poly_ = poly;
     myContextMenu = contextMenu;
     setAcceptedMouseButtons( Qt::LeftButton );
-    setFlag(QGraphicsItem::ItemIsSelectable, true);
+    //setFlag(QGraphicsItem::ItemIsSelectable, true);
+    setZValue(-1);
 }
+
+/*void MyPolygon::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(poly_.containsPoint(event->scenePos(),Qt::WindingFill)){
+        setSelected(true);
+    }else{
+        QGraphicsItem::mousePressEvent(event);
+    }
+}*/
 
 void MyPolygon::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
@@ -28,9 +38,9 @@ QRectF MyPolygon::boundingRect() const
 
 void MyPolygon::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
-    scene()->clearSelection();
-    setSelected(true);
     if(poly_.containsPoint(event->scenePos(),Qt::WindingFill)){
+        scene()->clearSelection();
+        setSelected(true);
         myContextMenu->exec(event->screenPos());
     }else{
         QGraphicsItem::contextMenuEvent(event);

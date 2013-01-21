@@ -1,13 +1,13 @@
 #include "mypoint.h"
 
-MyPoint::MyPoint(QPointF pt, int patternID, int pointID, QMenu *contextMenu) : srcEdge_(NULL), destEdge_(NULL), patternID_(patternID), pointID_(pointID)
+MyPoint::MyPoint(QPointF pt, int patternID, int pointID, QMenu *contextMenu) : srcEdge_(NULL), destEdge_(NULL), patternID_(patternID), pointID_(pointID), select_(false)
 {
     widget = new MyPointWidget(patternID,pointID);
     myContextMenu = contextMenu;
     setFlag(QGraphicsItem::ItemIsMovable, true);
     setFlag(QGraphicsItem::ItemIsSelectable, true);
     setFlag(ItemSendsGeometryChanges);
-    setZValue(-1);
+    setZValue(2);
     this->setPos(pt);
 }
 
@@ -15,10 +15,27 @@ void MyPoint::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
 {
     Q_UNUSED(option);
     painter->setPen(Qt::NoPen);
-    painter->setBrush(Qt::red);
+    QColor color(Qt::red);
+    if( select_ ){
+        color.setAlpha(125);
+    }
+    painter->setBrush(color);
     painter->drawEllipse(-10, -10, 20, 20);
 }
 
+void MyPoint::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    select_ = true;
+    this->update();
+    QGraphicsItem::mousePressEvent(event);
+}
+
+void MyPoint::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    select_ = false;
+    this->update();
+    QGraphicsItem::mouseReleaseEvent(event);
+}
 
 QRectF MyPoint::boundingRect() const
 {

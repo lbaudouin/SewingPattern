@@ -49,7 +49,7 @@ private:
     QList<MyEdge*> allEdges_;
     QList<MyPoint*> listPoint;
     QMenu *nodeMenu,*edgeMenu,*polyMenu;
-    QAction *deleteAction,*splitAction;
+    QAction *deleteAction,*splitAction,*closeAction,*transformAction;
 
 
     QList<MyPattern*> patterns_;
