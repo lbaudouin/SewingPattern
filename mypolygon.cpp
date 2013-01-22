@@ -5,8 +5,45 @@ MyPolygon::MyPolygon(QPolygonF poly, QMenu *contextMenu)
     poly_ = poly;
     myContextMenu = contextMenu;
     setAcceptedMouseButtons( Qt::LeftButton );
-    //setFlag(QGraphicsItem::ItemIsSelectable, true);
+    setFlag(QGraphicsItem::ItemIsSelectable, true);
     setZValue(-1);
+}
+
+void MyPolygon::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(poly_.containsPoint(event->scenePos(),Qt::WindingFill)){
+        qDebug() << "Is inside poly";
+        if (event->button() == Qt::LeftButton){// && (flags() & ItemIsSelectable)) {
+            bool multiSelect = (event->modifiers() & Qt::ControlModifier) != 0;
+            if (!multiSelect) {
+                setSelected(true);
+                qDebug() << "Set selected";
+                event->accept();
+                /*
+                if (!d_ptr->selected) {
+                    if (QGraphicsScene *scene = d_ptr->scene) {
+                        ++scene->d_func()->selectionChanging;
+                        scene->clearSelection();
+                        --scene->d_func()->selectionChanging;
+                    }
+                    setSelected(true);
+                }*/
+            }
+        } else if (!(flags() & ItemIsMovable)) {
+            event->ignore();
+        }
+        /*if (d_ptr->isWidget) {
+            // Qt::Popup closes when you click outside.
+            QGraphicsWidget *w = static_cast<QGraphicsWidget *>(this);
+            if ((w->windowFlags() & Qt::Popup) == Qt::Popup) {
+                event->accept();
+                if (!w->rect().contains(event->pos()))
+                    w->close();
+            }
+        }*/
+    }else{
+        QGraphicsItem::mousePressEvent(event);
+    }
 }
 
 /*void MyPolygon::mousePressEvent(QGraphicsSceneMouseEvent *event)

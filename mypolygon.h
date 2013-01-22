@@ -6,6 +6,7 @@
 #include <QMenu>
 #include <QPainter>
 #include <QGraphicsSceneContextMenuEvent>
+#include <QDebug>
 
 class MyPolygon : public QGraphicsItem
 {
@@ -18,7 +19,7 @@ public:
     void adjust();
 
 protected:
-    //void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 

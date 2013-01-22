@@ -44,6 +44,14 @@
 #include <QtGui>
 #include <QGLWidget>
 
+class QPolygon3F : public QList<QVector3D>
+{
+  public:
+    QPolygon3F(){}
+    bool isClosed(){ return this->first()==this->last(); }
+};
+
+
 class QGLShaderProgram;
 
 class GLWidget : public QGLWidget
@@ -58,6 +66,17 @@ public:
     QSize sizeHint() const;
     void rotateBy(int xAngle, int yAngle, int zAngle);
     void setClearColor(const QColor &color);
+
+    void setVertices(QVector<QVector3D> vect);
+    void setTextureCoords(QVector<QVector2D> vect);
+    void setTextures(QStringList list);
+    void setPolygons(QList<QPolygon3F> polys);
+
+    inline void clearVertices() {vertices_.clear();}
+    inline void clearTextures() {textures_.clear();}
+    inline void clearTextureCoords() {texCoords_.clear();}
+    inline void clearPolygons() {polys_.clear();}
+
 
 signals:
     void clicked();
@@ -79,16 +98,14 @@ private:
     int yRot;
     int zRot;
 
-    QList<GLuint> textures_;
-    QList<QVector3D> vertices_;
-    QList<QVector2D> texCoords_;
+    //Draw poylgon border
+    QList<QPolygon3F> polys_;
 
-    GLuint textures[6];
-    QVector<QVector3D> vertices;
-    QVector<QVector2D> texCoords;
-#ifdef QT_OPENGL_ES_2
-    QGLShaderProgram *program;
-#endif
+    //Use only triangles
+    QList<GLuint> textures_;
+    QVector<QVector3D> vertices_;
+    QVector<QVector2D> texCoords_;
+
 };
 
 #endif

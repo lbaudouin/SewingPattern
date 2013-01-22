@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->mainToolBar->addWidget(button);
 
     GLWidget *gl = new GLWidget(0, 0);
-    gl->setClearColor(QColor(255,0,0));
+    gl->setClearColor(QColor(225,255,255));
     QVBoxLayout *vlayout = new QVBoxLayout;
     vlayout->addWidget(gl);
     ui->tab_simu->setLayout(vlayout);
@@ -87,6 +87,29 @@ MainWindow::MainWindow(QWidget *parent) :
             allEdges_ << new MyEdge(p1,p2,edgeMenu);
         }*/
     }
+
+    QList<QPointF> pts = patterns_.at(0)->getPoints().values();
+    QVector<QVector3D> vertices;
+    for(int i=0;i<pts.size();i++)
+        vertices << 0.002*QVector3D(pts.at(i).x(),pts.at(i).y(),0.0);
+    QVector<QVector2D> texCoords;
+    for(int i=0;i<pts.size();i++)
+        texCoords << 0.002*QVector2D(pts.at(i).x(),pts.at(i).y());
+    QStringList textures;
+    textures << "test.jpg";
+    QList<QPolygon3F> polys;
+    QPolygon3F poly;
+    for(int i=0;i<pts.size();i++)
+        poly << 0.002*QVector3D(pts.at(i).x(),pts.at(i).y(),0.0);
+    polys << poly;
+
+    gl->clearTextures();
+    gl->clearTextureCoords();
+    gl->clearVertices();
+    //gl->setTextures(textures);
+    //gl->setTextureCoords(texCoords);
+    //gl->setVertices(vertices);
+    gl->setPolygons(polys);
 }
 
 MainWindow::~MainWindow()
