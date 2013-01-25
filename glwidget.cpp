@@ -89,6 +89,7 @@ void GLWidget::initializeGL()
 
     //gl{Enable,Disable}(GL_CULL_FACE);
     //glCullFace(GL_{FRONT,BACK,FRONT_AND_BACK});
+    //glCullFace(GL_FRONT_AND_BACK);
 
     glEnable(GL_TEXTURE_2D);
 
@@ -112,7 +113,20 @@ void GLWidget::paintGL()
     glVertexPointer(3, GL_FLOAT, 0, vertices_.constData());
     glTexCoordPointer(2, GL_FLOAT, 0, texCoords_.constData());
 
-    glColor3f(0, 0, 0);
+    if(textures_.size()>0){
+        //qDebug() << "Display texture" << texCoords_.size();
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        /*for (int i = 0; i < textures_.size(); ++i) {
+            glBindTexture(GL_TEXTURE_2D, textures_[0]);
+            glDrawArrays(GL_TRIANGLE_FAN, i * 3, 3);
+        }*/
+        glBindTexture(GL_TEXTURE_2D, textures_[0]);
+        for(int i=0;i<vertices_.size()/3;i++)
+            glDrawArrays(GL_TRIANGLE_FAN, i * 3, 3);
+    }
+
+    /*glColor3f(0, 0, 0);
 
     for(int i=0;i<polys_.size();i++){
         QPolygon3F poly = polys_.at(i);
@@ -122,16 +136,7 @@ void GLWidget::paintGL()
             glVertex3d(poly.at(j+1).x(),poly.at(j+1).y(),poly.at(j+1).z());
         }
         glEnd();
-    }
-
-    if(textures_.size()>0){
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        for (int i = 0; i < 6; ++i) {
-            glBindTexture(GL_TEXTURE_2D, textures_[0]);
-            glDrawArrays(GL_TRIANGLE_FAN, i * 3, 3);
-        }
-    }
+    }*/
 }
 
 void GLWidget::resizeGL(int width, int height)
@@ -166,6 +171,11 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 void GLWidget::mouseReleaseEvent(QMouseEvent * /* event */)
 {
     emit clicked();
+}
+
+void GLWidget::wheelEvent(QWheelEvent *event)
+{
+    //TODO, zoom
 }
 
 void GLWidget::makeObject()

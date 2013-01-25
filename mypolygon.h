@@ -8,15 +8,19 @@
 #include <QGraphicsSceneContextMenuEvent>
 #include <QDebug>
 
+#include <mypoint.h>
+#include <mypattern.h>
+
 class MyPolygon : public QGraphicsItem
 {
 public:
-    MyPolygon(QPolygonF poly, QMenu *contextMenu = 0);
+    MyPolygon(MyPattern *pattern, QMenu *contextMenu = 0);
     QRectF boundingRect() const;
 
     void setColor(QColor color);
     void setPolygon(QPolygonF &poly);
     void adjust();
+    void addPoint(MyPoint *point);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -25,7 +29,8 @@ protected:
 
 private:
     QMenu *myContextMenu;
-    QPolygonF poly_;
+    MyPattern *pattern_;
+    QList<MyPoint*> points_;
 
     QColor color_;
 };

@@ -1,17 +1,22 @@
 #include "mypolygon.h"
 
-MyPolygon::MyPolygon(QPolygonF poly, QMenu *contextMenu)
+MyPolygon::MyPolygon(MyPattern *pattern, QMenu *contextMenu)
 {
-    poly_ = poly;
+    pattern_ = pattern;
     myContextMenu = contextMenu;
     setAcceptedMouseButtons( Qt::LeftButton );
     setFlag(QGraphicsItem::ItemIsSelectable, true);
     setZValue(-1);
 }
 
+void MyPolygon::addPoint(MyPoint *point)
+{
+    points_ << point;
+}
+
 void MyPolygon::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(poly_.containsPoint(event->scenePos(),Qt::WindingFill)){
+    if(pattern_->getPolygon().containsPoint(event->scenePos(),Qt::WindingFill)){
         qDebug() << "Is inside poly";
         if (event->button() == Qt::LeftButton){// && (flags() & ItemIsSelectable)) {
             bool multiSelect = (event->modifiers() & Qt::ControlModifier) != 0;
@@ -65,17 +70,17 @@ void MyPolygon::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         color.setAlpha(50);
     painter->setPen(Qt::NoPen);
     painter->setBrush(color);
-    painter->drawPolygon(poly_);
+    painter->drawPolygon(pattern_->getPolygon());
 }
 
 QRectF MyPolygon::boundingRect() const
 {
-    return poly_.boundingRect();
+    return pattern_->getPolygon().boundingRect();
 }
 
 void MyPolygon::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
-    if(poly_.containsPoint(event->scenePos(),Qt::WindingFill)){
+    if(pattern_->getPolygon().containsPoint(event->scenePos(),Qt::WindingFill)){
         scene()->clearSelection();
         setSelected(true);
         myContextMenu->exec(event->screenPos());

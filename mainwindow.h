@@ -53,6 +53,7 @@ private:
 
 
     QList<MyPattern*> patterns_;
+    QList<MyPolygon*> polygons_;
 
 private slots:
     void pressTest();
