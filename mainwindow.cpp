@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(button,SIGNAL(clicked()),this,SLOT(closePoly()));
     ui->mainToolBar->addWidget(button);
 
-    GLWidget *gl = new GLWidget(0, 0);
+    gl = new GLWidget(0, 0);
     gl->setClearColor(QColor(225,255,255));
     QVBoxLayout *vlayout = new QVBoxLayout;
     vlayout->addWidget(gl);
@@ -55,6 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     connect(ui->buttonTest,SIGNAL(clicked()),this,SLOT(pressTest()));
+    connect(ui->button3D,SIGNAL(clicked()),this,SLOT(pressSimu()));
     //connect(scene,SIGNAL(middleClicked(QPointF)),this,SLOT(addPoint(QPointF)));
 
    /* MyPattern p(0,"Test pattern");
@@ -85,45 +86,6 @@ MainWindow::MainWindow(QWidget *parent) :
             allEdges_ << new MyEdge(p1,p2,edgeMenu);
         }*/
     }
-
-    Meshing mesh(patterns_[0]->getPolygon(),25.0);
-    QList<QPolygonF> ps = mesh.getMesh();
-
-    QList<QPointF> pts;// = patterns_.at(0)->getPoints().values();
-    foreach(QPolygonF p, ps){
-        //qDebug() << p.size();
-        double a1 = QLineF(p.at(0),p.at(1)).angle() - QLineF(p.at(1),p.at(2)).angle();
-        //if(a1>=0)
-            pts << p.at(0) << p.at(1) << p.at(2);
-        //else
-        //    pts << p.at(0) << p.at(2) << p.at(1);
-    }
-
-    QVector<QVector3D> vertices;
-    for(int i=0;i<pts.size();i++)
-        vertices << 0.002*QVector3D(pts.at(i).x(),pts.at(i).y(),0.0);
-    QVector<QVector2D> texCoords;
-    for(int i=0;i<pts.size();i++)
-        texCoords << 0.01*QVector2D(pts.at(i).x(),pts.at(i).y());
-    QStringList textures;
-    textures << "images/chanvre.jpg";
-    //textures << "test.jpg";
-    QList<QPolygon3F> polys;
-    QPolygon3F poly;
-    pts = patterns_.at(0)->getPoints().values();
-    for(int i=0;i<pts.size();i++)
-        poly << 0.002*QVector3D(pts.at(i).x(),pts.at(i).y(),0.0);
-    polys << poly;
-#if 0
-    gl->clearTextures();
-    gl->clearTextureCoords();
-    gl->clearVertices();
-#else
-    gl->setVertices(vertices);
-    gl->setTextures(textures);
-    gl->setTextureCoords(texCoords);
-#endif
-    gl->setPolygons(polys);
 }
 
 MainWindow::~MainWindow()
@@ -267,4 +229,49 @@ void MainWindow::saveFile(QString filename)
 void MainWindow::pointMovedInScene(int patternID, int pointID, QPointF newPos)
 {
     emit this->pointMoved(patternID,pointID,newPos);
+}
+
+void MainWindow::pressSimu()
+{
+    Meshing mesh(patterns_[0]->getPolygon(),25.0);
+    QList<QPolygonF> ps = mesh.getMesh();
+
+    QList<QPointF> pts;// = patterns_.at(0)->getPoints().values();
+    foreach(QPolygonF p, ps){
+        //qDebug() << p.size();
+        double a1 = QLineF(p.at(0),p.at(1)).angle() - QLineF(p.at(1),p.at(2)).angle();
+        //if(a1>=0)
+            pts << p.at(0) << p.at(1) << p.at(2);
+        //else
+        //    pts << p.at(0) << p.at(2) << p.at(1);
+    }
+
+    QVector<QVector3D> vertices;
+    for(int i=0;i<pts.size();i++)
+        vertices << 0.002*QVector3D(pts.at(i).x(),pts.at(i).y(),0.0);
+    QVector<QVector2D> texCoords;
+    for(int i=0;i<pts.size();i++)
+        texCoords << 0.01*QVector2D(pts.at(i).x(),pts.at(i).y());
+    QStringList textures;
+    textures << "images/chanvre.jpg";
+    //textures << "test.jpg";
+    QList<QPolygon3F> polys;
+    QPolygon3F poly;
+    pts = patterns_.at(0)->getPoints().values();
+    for(int i=0;i<pts.size();i++)
+        poly << 0.002*QVector3D(pts.at(i).x(),pts.at(i).y(),0.0);
+    polys << poly;
+#if 0
+    gl->clearTextures();
+    gl->clearTextureCoords();
+    gl->clearVertices();
+#else
+    gl->setVertices(vertices);
+    gl->setTextures(textures);
+    gl->setTextureCoords(texCoords);
+#endif
+    gl->setPolygons(polys);
+    gl->updateGL();
+
+    ui->tabWidget->setCurrentIndex(2);
 }

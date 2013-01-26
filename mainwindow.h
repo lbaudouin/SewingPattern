@@ -14,6 +14,7 @@
 #include "mypoint.h"
 #include "myedge.h"
 #include "glwidget.h"
+#include "engine.h"
 
 namespace Ui {
 class MainWindow;
@@ -55,8 +56,11 @@ private:
     QList<MyPattern*> patterns_;
     QList<MyPolygon*> polygons_;
 
+    GLWidget *gl;
+
 private slots:
     void pressTest();
+    void pressSimu();
     MyPoint* addPoint(QPointF pt, int patternID, int pointID);
     void closePoly();
     void pointMovedInScene(int patternID, int pointID, QPointF newPos);

@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     tools.cpp \
     glwidget.cpp \
     mypolygon.cpp \
-    graphicsview.cpp
+    graphicsview.cpp \
+    engine.cpp
 
 HEADERS  += mainwindow.h \
     point2d.h \
@@ -35,6 +36,7 @@ HEADERS  += mainwindow.h \
     tools.h \
     glwidget.h \
     mypolygon.h \
-    graphicsview.h
+    graphicsview.h \
+    engine.h
 
 FORMS    += mainwindow.ui
