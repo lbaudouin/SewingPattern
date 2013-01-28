@@ -22,6 +22,7 @@ void MyPoint::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
     }
     painter->setBrush(color);
     painter->drawEllipse(-10, -10, 20, 20);
+    painter->drawText(this->boundingRect(),Qt::AlignCenter,QString::number(pointID_));
 }
 
 void MyPoint::mousePressEvent(QGraphicsSceneMouseEvent *event)

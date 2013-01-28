@@ -8,6 +8,11 @@
 #include <QDebug>
 #include <QObject>
 
+class MyPattern;
+
+#include "mypoint.h"
+#include "myedge.h"
+
 class MyPattern : public QObject
 {
     Q_OBJECT
@@ -21,10 +26,16 @@ public:
     void addCurve(int id, QList<int> points);
 
     QPolygonF getPolygon();
+    QString getName();
 
     inline QMap<int,QPointF> getPoints(){return points_;}
     inline QMap<int,QPair<int,int> > getEdges(){return edges_;}
     inline QMap<int,QList<int> > getCurves(){return curves_;}
+
+    QString getText();
+
+    void setPoint(int id, MyPoint* point);
+    QList<MyEdge*> getEdges(QMenu *menu = 0);
 
     inline friend QTextStream& operator<< (QTextStream& os, const MyPattern& pattern)
     {
@@ -74,6 +85,9 @@ public:
 
     int id_;
     QString name_;
+
+    QMap<int,MyPoint*> refPoints_;
+
     QMap<int,QPointF> points_;
     QMap<int,QPair<int,int> > edges_;
     QMap<int,QList<int> > curves_;

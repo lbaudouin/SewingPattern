@@ -62,6 +62,7 @@ void MyPolygon::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void MyPolygon::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
+    painter->save();
     Q_UNUSED(option);
     QColor color = color_;
     if(isSelected())
@@ -70,7 +71,16 @@ void MyPolygon::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         color.setAlpha(50);
     painter->setPen(Qt::NoPen);
     painter->setBrush(color);
-    painter->drawPolygon(pattern_->getPolygon());
+    painter->drawPolygon(pattern_->getPolygon(),Qt::WindingFill);
+
+    painter->setPen(Qt::black);
+
+    //qDebug() << pattern_->getName();
+    //QRect rect(0,0,200,50);
+    //painter->drawText(rect, Qt::AlignCenter, pattern_->getName());
+    painter->drawText(pattern_->getPolygon().boundingRect(), Qt::AlignCenter, pattern_->getName());
+    //painter->drawText(QRect(pattern_->getPolygon().at(0).toPoint(),QSize(200,50)), Qt::AlignCenter, pattern_->getName());
+    painter->restore();
 }
 
 QRectF MyPolygon::boundingRect() const

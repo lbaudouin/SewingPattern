@@ -61,6 +61,7 @@ private:
 private slots:
     void pressTest();
     void pressSimu();
+    void pressSave();
     MyPoint* addPoint(QPointF pt, int patternID, int pointID);
     void closePoly();
     void pointMovedInScene(int patternID, int pointID, QPointF newPos);

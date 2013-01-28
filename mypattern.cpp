@@ -29,6 +29,11 @@ bool MyPattern::isValid()
     return id_>=0;
 }
 
+QString MyPattern::getName()
+{
+    return name_;
+}
+
 QPolygonF MyPattern::getPolygon()
 {
     QPolygonF poly;
@@ -75,4 +80,43 @@ void MyPattern::pointMoved(int patternID, int pointID, QPointF newPos)
         return;
     if(points_.contains(pointID))
         points_[pointID] = newPos;
+}
+
+QString MyPattern::getText()
+{
+    QString text;
+    text +=  QString("PATTERN %1 %2\n").arg(QString::number(id_),name_);
+    QList<int> ids = points_.keys();
+    for(int i=0;i<ids.size();i++){
+        text +=  QString("POINT %1 %2 %3\n").arg(QString::number(ids.at(i)),QString::number( points_[ids.at(i)].x()),QString::number(points_[ids.at(i)].y()));
+    }
+    ids = edges_.keys();
+    for(int i=0;i<ids.size();i++){
+        text +=  QString("EDGE %1 %2 %3\n").arg(QString::number(ids.at(i)),QString::number( edges_[ids.at(i)].first),QString::number(edges_[ids.at(i)].second));
+    }
+    ids = curves_.keys();
+    for(int i=0;i<ids.size();i++){
+        int id = ids.at(i);
+        text +=  QString("CURVE %1").arg(QString::number(id));
+        for(int j=0;j<curves_[id].size();j++)
+            text +=  QString(" %1").arg(QString::number(curves_[id].at(j)));
+        text += "\n";
+    }
+    return text;
+}
+
+void MyPattern::setPoint(int id, MyPoint *point)
+{
+    refPoints_.insert(id,point);
+    //qDebug() << "Add point " << id;
+}
+
+QList<MyEdge*> MyPattern::getEdges(QMenu *menu)
+{
+    QList<QPair<int,int> > edges = edges_.values();
+    for(int i=0;i<edges.size();i++){
+        if(!refPoints_.contains(edges[i].first)) qDebug() << "Point " << edges[i].first << " not existing";
+        if(!refPoints_.contains(edges[i].second)) qDebug() << "Point " << edges[i].second << " not existing";
+        MyEdge* e = new MyEdge(refPoints_[edges[i].first],refPoints_[edges[i].second],menu);
+    }
 }

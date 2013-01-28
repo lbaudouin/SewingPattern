@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow), first(true)
 {
     ui->setupUi(this);
+    this->setWindowState(Qt::WindowMaximized);
     QPushButton *button = new QPushButton("New Polygon");
     connect(button,SIGNAL(clicked()),this,SLOT(closePoly()));
     ui->mainToolBar->addWidget(button);
@@ -47,7 +48,6 @@ MainWindow::MainWindow(QWidget *parent) :
     edgeMenu->addAction( transformAction );
 
 
-
     polyMenu = new QMenu(this);
     polyMenu->addAction( deleteAction );
     closeAction = new QAction("Close Polygon",this);
@@ -56,6 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->buttonTest,SIGNAL(clicked()),this,SLOT(pressTest()));
     connect(ui->button3D,SIGNAL(clicked()),this,SLOT(pressSimu()));
+    connect(ui->buttonSave,SIGNAL(clicked()),this,SLOT(pressSave()));
     //connect(scene,SIGNAL(middleClicked(QPointF)),this,SLOT(addPoint(QPointF)));
 
    /* MyPattern p(0,"Test pattern");
@@ -69,22 +70,36 @@ MainWindow::MainWindow(QWidget *parent) :
 
     loadFile("test.txt");
 
+    QList<QColor> colors;
+    colors << Qt::blue << Qt::green << Qt::yellow << Qt::magenta << Qt::gray << Qt::cyan << Qt::red << Qt::black;
+
+    /*black, white, darkGray, gray, lightGray,
+    red, green, blue, cyan, magenta, yellow,
+    darkRed, darkGreen, darkBlue, darkCyan, darkMagenta, darkYellow*/
+
     //foreach(MyPattern pattern, patterns_){
     for(int i=0;i<patterns_.size();i++){
         MyPattern *pattern = patterns_.at(i);
         MyPolygon *p = new MyPolygon(pattern,polyMenu);
-        p->setColor(Qt::blue);
+        p->setColor(colors.at(i%colors.size()));
         polygons_ << p;
         scene->addItem(p);
         QMap<int,QPointF> pts = pattern->getPoints();
         QList<int> keys = pts.keys();
-        for(int i=0;i<keys.size();i++)
-            allPoints_ << addPoint(pts[keys.at(i)],pattern->id_,keys.at(i));
-        /*for(int i=0;i<edges.size();i++){
-            MyPoint *p1;
-            MyPoint *p2;
-            allEdges_ << new MyEdge(p1,p2,edgeMenu);
-        }*/
+        for(int j=0;j<keys.size();j++){
+            int key = keys.at(j);
+            MyPoint * pt = new MyPoint(pts[key],p,pattern->id_,key,nodeMenu);
+            connect(pt->widget,SIGNAL(moved(int,int,QPointF)),this,SLOT(pointMovedInScene(int,int,QPointF)));
+            pattern->setPoint(key,pt);
+            scene->addItem(pt);
+            //allPoints_ << addPoint(pts[keys.at(i)],pattern->id_,keys.at(i));
+        }
+        QList<MyEdge*> edges = pattern->getEdges(edgeMenu);
+        //qDebug() << "Add " << edges.size() << " edges";
+        for(int j=0;j<edges.size();j++){
+        //foreach(MyEdge* e, edges){
+            scene->addItem(edges[j]);
+        }
     }
 }
 
@@ -165,7 +180,7 @@ void MainWindow::loadFile(QString filename)
                 int id = items.at(1).toInt();
                 QString name;
                 for(int i=2;i<items.size();i++){
-                    name += items.at(i);
+                    name += " " + items.at(i);
                 }
                 name = name.trimmed();
                 if(pattern->isValid())
@@ -216,13 +231,18 @@ void MainWindow::loadFile(QString filename)
     }
 }
 
+void MainWindow::pressSave()
+{
+    saveFile("test.txt");
+}
+
 void MainWindow::saveFile(QString filename)
 {
     QFile file(filename);
     file.open(QFile::WriteOnly);
     QTextStream out(&file);
     for(int i=0;i<patterns_.size();i++)
-        out << patterns_.at(i);
+        out << patterns_.at(i)->getText();
     file.close();
 }
 
