@@ -44,7 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
     splitAction->setStatusTip(tr("Split edge here"));
     //connect(splitAction, SIGNAL(triggered()), this, SLOT(deleteItem()));
     edgeMenu->addAction( splitAction );
-    transformAction = new QAction("Split",this);
+    transformAction = new QAction("Transform",this);
     edgeMenu->addAction( transformAction );
 
 
@@ -94,7 +94,7 @@ MainWindow::MainWindow(QWidget *parent) :
             scene->addItem(pt);
             //allPoints_ << addPoint(pts[keys.at(i)],pattern->id_,keys.at(i));
         }
-        QList<MyEdge*> edges = pattern->getEdges(edgeMenu);
+        QList<MyEdge*> edges = pattern->getEdgesList(edgeMenu);
         //qDebug() << "Add " << edges.size() << " edges";
         for(int j=0;j<edges.size();j++){
         //foreach(MyEdge* e, edges){

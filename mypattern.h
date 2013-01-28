@@ -35,7 +35,7 @@ public:
     QString getText();
 
     void setPoint(int id, MyPoint* point);
-    QList<MyEdge*> getEdges(QMenu *menu = 0);
+    QList<MyEdge*> getEdgesList(QMenu *menu = 0);
 
     inline friend QTextStream& operator<< (QTextStream& os, const MyPattern& pattern)
     {

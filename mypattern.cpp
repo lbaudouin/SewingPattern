@@ -111,12 +111,15 @@ void MyPattern::setPoint(int id, MyPoint *point)
     //qDebug() << "Add point " << id;
 }
 
-QList<MyEdge*> MyPattern::getEdges(QMenu *menu)
+QList<MyEdge*> MyPattern::getEdgesList(QMenu *menu)
 {
+    QList<MyEdge*> list;
     QList<QPair<int,int> > edges = edges_.values();
     for(int i=0;i<edges.size();i++){
         if(!refPoints_.contains(edges[i].first)) qDebug() << "Point " << edges[i].first << " not existing";
         if(!refPoints_.contains(edges[i].second)) qDebug() << "Point " << edges[i].second << " not existing";
         MyEdge* e = new MyEdge(refPoints_[edges[i].first],refPoints_[edges[i].second],menu);
+        list << e;
     }
+    return list;
 }
