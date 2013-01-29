@@ -1,6 +1,6 @@
 #include "mypoint.h"
 
-MyPoint::MyPoint(QPointF pt, MyPolygon *poly, int patternID, int pointID, QMenu *contextMenu) : srcEdge_(NULL), destEdge_(NULL), poly_(poly), patternID_(patternID), pointID_(pointID), select_(false)
+MyPoint::MyPoint(QPointF pt, MyPolygon *poly, int patternID, int pointID, QMenu *contextMenu) : srcEdge_(NULL), destEdge_(NULL), poly_(poly), patternID_(patternID), pointID_(pointID), select_(false), gridSize(10)
 {
     widget = new MyPointWidget(patternID,pointID);
     myContextMenu = contextMenu;
@@ -35,6 +35,12 @@ void MyPoint::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void MyPoint::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     select_ = false;
+
+    int poseX = gridSize*((int)(pos().x()+(pos().x()>0?gridSize/2:-gridSize/2))/gridSize);
+    int poseY = gridSize*((int)(pos().y()+(pos().y()>0?gridSize/2:-gridSize/2))/gridSize);
+
+    this->setPos(poseX,poseY);
+
     this->update();
     QGraphicsItem::mouseReleaseEvent(event);
 }

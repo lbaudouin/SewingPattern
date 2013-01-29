@@ -58,6 +58,8 @@ private:
 
     GLWidget *gl;
 
+    QList<QGraphicsLineItem*> grids;
+
 private slots:
     void pressTest();
     void pressSimu();

@@ -27,8 +27,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->graphicsView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     //ui->graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
 
-    scene->addPixmap( QPixmap("images/sample.png").scaledToWidth(640) )->setPos(-500,-500);
+    //scene->addPixmap( QPixmap("images/sample.png").scaledToWidth(640) )->setPos(-500,-500);
 
+    QPen penGrid(Qt::gray,0.2);
+    for(int i=-1000;i<=1000;i+=10){
+        grids << scene->addLine(QLineF(QPointF(-1000,i),QPointF(1000,i)),penGrid);
+        grids << scene->addLine(QLineF(QPointF(i,-1000),QPointF(i,1000)),penGrid);
+    }
 
     nodeMenu = new QMenu(this);
     deleteAction = new QAction("Delete",this);

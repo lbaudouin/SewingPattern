@@ -56,6 +56,8 @@ private:
 
     bool select_;
 
+    int gridSize;
+
 signals:
     
 public slots:
