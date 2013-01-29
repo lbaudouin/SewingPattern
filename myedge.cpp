@@ -9,11 +9,16 @@ MyEdge::MyEdge(MyPoint *src, MyPoint *dest, QMenu *contextMenu)
     myContextMenu = contextMenu;
     setZValue(1);
     adjust();
+    setFlag(QGraphicsItem::ItemIsSelectable, true);
 }
 
 void MyEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
     Q_UNUSED(option);
+    if(isSelected()){
+        painter->setPen( QPen(Qt::red,3) );
+        painter->drawLine(src_->pos(),dest_->pos());
+    }
     painter->setPen(Qt::green);
     painter->drawLine(src_->pos(),dest_->pos());
 }

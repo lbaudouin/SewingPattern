@@ -253,34 +253,36 @@ void MainWindow::pointMovedInScene(int patternID, int pointID, QPointF newPos)
 
 void MainWindow::pressSimu()
 {
-    Meshing mesh(patterns_[0]->getPolygon(),25.0);
-    QList<QPolygonF> ps = mesh.getMesh();
-
-    QList<QPointF> pts;// = patterns_.at(0)->getPoints().values();
-    foreach(QPolygonF p, ps){
-        //qDebug() << p.size();
-        double a1 = QLineF(p.at(0),p.at(1)).angle() - QLineF(p.at(1),p.at(2)).angle();
-        //if(a1>=0)
-            pts << p.at(0) << p.at(1) << p.at(2);
-        //else
-        //    pts << p.at(0) << p.at(2) << p.at(1);
-    }
-
     QVector<QVector3D> vertices;
-    for(int i=0;i<pts.size();i++)
-        vertices << 0.002*QVector3D(pts.at(i).x(),pts.at(i).y(),0.0);
     QVector<QVector2D> texCoords;
-    for(int i=0;i<pts.size();i++)
-        texCoords << 0.01*QVector2D(pts.at(i).x(),pts.at(i).y());
+    QList<QPolygon3F> polys;
     QStringList textures;
     textures << "images/chanvre.jpg";
-    //textures << "test.jpg";
-    QList<QPolygon3F> polys;
-    QPolygon3F poly;
-    pts = patterns_.at(0)->getPoints().values();
-    for(int i=0;i<pts.size();i++)
-        poly << 0.002*QVector3D(pts.at(i).x(),pts.at(i).y(),0.0);
-    polys << poly;
+
+    for(int k=0;k<patterns_.size();k++){
+        Meshing mesh(patterns_[k]->getPolygon(),25.0);
+        QList<QPolygonF> ps = mesh.getMesh();
+
+        QList<QPointF> pts;// = patterns_.at(0)->getPoints().values();
+        foreach(QPolygonF p, ps){
+            //qDebug() << p.size();
+            double a1 = QLineF(p.at(0),p.at(1)).angle() - QLineF(p.at(1),p.at(2)).angle();
+            //if(a1>=0)
+                pts << p.at(0) << p.at(1) << p.at(2);
+            //else
+            //    pts << p.at(0) << p.at(2) << p.at(1);
+        }
+
+        for(int i=0;i<pts.size();i++)
+            vertices << 0.002*QVector3D(pts.at(i).x(),pts.at(i).y(),0.0);
+        for(int i=0;i<pts.size();i++)
+            texCoords << 0.01*QVector2D(pts.at(i).x(),pts.at(i).y());
+        QPolygon3F poly;
+        pts = patterns_.at(k)->getPoints().values();
+        for(int i=0;i<pts.size();i++)
+            poly << 0.002*QVector3D(pts.at(i).x(),pts.at(i).y(),0.0);
+        polys << poly;
+    }
 #if 0
     gl->clearTextures();
     gl->clearTextureCoords();
