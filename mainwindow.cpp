@@ -7,9 +7,11 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     this->setWindowState(Qt::WindowMaximized);
-    QPushButton *button = new QPushButton("New Polygon");
-    connect(button,SIGNAL(clicked()),this,SLOT(closePoly()));
-    ui->mainToolBar->addWidget(button);
+    {
+        QPushButton *button = new QPushButton("New Polygon");
+        connect(button,SIGNAL(clicked()),this,SLOT(closePoly()));
+        ui->mainToolBar->addWidget(button);
+    }
 
     gl = new GLWidget(0, 0);
     gl->setClearColor(QColor(225,255,255));
@@ -29,10 +31,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //scene->addPixmap( QPixmap("images/sample.png").scaledToWidth(640) )->setPos(-500,-500);
 
-    QPen penGrid(Qt::gray,0.2);
-    for(int i=-1000;i<=1000;i+=10){
-        grids << scene->addLine(QLineF(QPointF(-1000,i),QPointF(1000,i)),penGrid);
-        grids << scene->addLine(QLineF(QPointF(i,-1000),QPointF(i,1000)),penGrid);
+    Grid *grid = new Grid(scene);
+    grid->hide();
+    {
+        QPushButton *button = new QPushButton("Grid");
+        button->setCheckable(true);
+        connect(button,SIGNAL(toggled(bool)),grid,SLOT(setVisible(bool)));
+        connect(button,SIGNAL(toggled(bool)),this,SLOT(enableGrid(bool)));
+        ui->mainToolBar->addWidget(button);
     }
 
     nodeMenu = new QMenu(this);
@@ -95,6 +101,7 @@ MainWindow::MainWindow(QWidget *parent) :
             int key = keys.at(j);
             MyPoint * pt = new MyPoint(pts[key],p,pattern->id_,key,nodeMenu);
             connect(pt->widget,SIGNAL(moved(int,int,QPointF)),this,SLOT(pointMovedInScene(int,int,QPointF)));
+            connect(this,SIGNAL(gridEnabled(bool)),pt->widget,SLOT(setUseGrid(bool)));
             pattern->setPoint(key,pt);
             scene->addItem(pt);
             //allPoints_ << addPoint(pts[keys.at(i)],pattern->id_,keys.at(i));
@@ -301,4 +308,9 @@ void MainWindow::pressSimu()
     gl->updateGL();
 
     ui->tabWidget->setCurrentIndex(2);
+}
+
+void MainWindow::enableGrid(bool state)
+{
+    emit this->gridEnabled(state);
 }

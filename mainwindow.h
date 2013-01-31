@@ -15,6 +15,7 @@
 #include "myedge.h"
 #include "glwidget.h"
 #include "engine.h"
+#include "grid.h"
 
 namespace Ui {
 class MainWindow;
@@ -67,9 +68,11 @@ private slots:
     MyPoint* addPoint(QPointF pt, int patternID, int pointID);
     void closePoly();
     void pointMovedInScene(int patternID, int pointID, QPointF newPos);
+    void enableGrid(bool state);
 
 signals:
     void pointMoved(int patternID, int pointID, QPointF newPos);
+    void gridEnabled(bool state);
 };
 
 #endif // MAINWINDOW_H

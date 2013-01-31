@@ -19,11 +19,17 @@ class MyPointWidget : public QWidget
 {
     Q_OBJECT
 public:
-    MyPointWidget(int patternID, int pointID) : patternID_(patternID), pointID_(pointID){}
+    MyPointWidget(int patternID, int pointID) : patternID_(patternID), pointID_(pointID), useGrid_(false), gridSize_(10){}
+    bool useGrid() {return useGrid_;}
+    int gridSize() {return gridSize_;}
 private:
     int patternID_,pointID_;
+    bool useGrid_;
+    int gridSize_;
 public slots:
     void pointMoved(QPointF pt) { emit moved(patternID_,pointID_,pt); }
+    void setUseGrid(bool state){ useGrid_ = state; }
+    void setGridSize(int gridsize){ gridSize_ = gridsize; }
 signals:
     void moved(int patternID, int pointID, QPointF newPos);
 };
@@ -55,8 +61,6 @@ private:
     int patternID_,pointID_;
 
     bool select_;
-
-    int gridSize;
 
 signals:
     
