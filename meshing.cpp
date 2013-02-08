@@ -3,23 +3,18 @@
 
 Meshing::Meshing(QPolygonF polyIn, double dist, QList<QPolygonF> polyOut) : original_(polyIn)
 {
-    if(polyIn.isEmpty())
+    if(original_.isEmpty())
         return;
 
-    if(!polyIn.isClosed())
-        polyIn << polyIn.at(0);
+    if(!original_.isClosed())
+        original_ << original_.at(0);
 
     //Test poly
-    for(int i=0;i<polyIn.size()-1;i++){
-        QLineF line(polyIn.at(i),polyIn.at(i+1));
-        if(intersects(polyIn,line)){
-            qDebug() << "Invalid polygon";
-            return;
-        }
-    }
+    if(!isGood())
+        return;
 
     mesh_.clear();
-    mesh_.push_back(polyIn);
+    mesh_.push_back(original_);
 
     //qDebug();
     splitDiag();
@@ -36,7 +31,20 @@ Meshing::Meshing(QPolygonF polyIn, double dist, QList<QPolygonF> polyOut) : orig
 
 }
 
-Meshing::Meshing(QPolygonF polyIn, int iter, QGraphicsView *graphicsView, QGraphicsScene *scene)
+bool Meshing::isGood()
+{
+    //Test poly
+    for(int i=0;i<original_.size()-1;i++){
+        QLineF line(original_.at(i),original_.at(i+1));
+        if(intersects(original_,line)){
+            qDebug() << "Invalid polygon";
+            return false;
+        }
+    }
+    return true;
+}
+
+/*Meshing::Meshing(QPolygonF polyIn, int iter, QGraphicsView *graphicsView, QGraphicsScene *scene)
 {
     mesh_.clear();
     mesh_.push_back(polyIn);
@@ -61,7 +69,7 @@ Meshing::Meshing(QPolygonF polyIn, int iter, QGraphicsView *graphicsView, QGraph
         refine();
     }
 
-}
+}*/
 
 void Meshing::addPoint(QPointF point)
 {
