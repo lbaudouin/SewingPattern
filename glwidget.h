@@ -91,13 +91,12 @@ protected:
     void wheelEvent(QWheelEvent *event);
 
 private:
-    void makeObject();
-
     QColor clearColor;
     QPoint lastPos;
     int xRot;
     int yRot;
     int zRot;
+    float zoom;
 
     //Draw poylgon border
     QList<QPolygon3F> polys_;

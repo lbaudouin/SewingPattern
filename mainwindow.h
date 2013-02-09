@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include "point2d.h"
 #include "edge.h"
-#include "meshing.h"
+#include "meshing/meshing.h"
 #include "patternscene.h"
 #include <QDebug>
 

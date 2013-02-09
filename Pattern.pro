@@ -14,7 +14,7 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     point2d.cpp \
     edge.cpp \
-    meshing.cpp \
+    meshing/meshing.cpp \
     patternscene.cpp \
     mypoint.cpp \
     myedge.cpp \
@@ -24,12 +24,16 @@ SOURCES += main.cpp\
     mypolygon.cpp \
     graphicsview.cpp \
     engine.cpp \
-    grid.cpp
+    grid.cpp \
+    meshing/mymeshingedge.cpp \
+    meshing/mymeshingpoint.cpp \
+    meshing/mymeshingpolygon.cpp \
+    meshing/mymeshingtriangle.cpp
 
 HEADERS  += mainwindow.h \
     point2d.h \
     edge.h \
-    meshing.h \
+    meshing/meshing.h \
     patternscene.h \
     mypoint.h \
     myedge.h \
@@ -39,6 +43,10 @@ HEADERS  += mainwindow.h \
     mypolygon.h \
     graphicsview.h \
     engine.h \
-    grid.h
+    grid.h \
+    meshing/mymeshingedge.h \
+    meshing/mymeshingpoint.h \
+    meshing/mymeshingpolygon.h \
+    meshing/mymeshingtriangle.h
 
 FORMS    += mainwindow.ui

@@ -50,6 +50,7 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget *shareWidget)
     xRot = 0;
     yRot = 0;
     zRot = 0;
+    zoom = 10.0;
 }
 
 GLWidget::~GLWidget()
@@ -105,10 +106,26 @@ void GLWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glLoadIdentity();
-    glTranslatef(0.0f, 0.0f, -10.0f);
+    glTranslatef(0.0f, 0.0f, -10.0);
     glRotatef(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
     glRotatef(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
     glRotatef(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
+
+
+    glDisable(GL_TEXTURE_2D);
+    glColor3f(0, 0, 0);
+    for(int i=0;i<polys_.size();i++){
+        QPolygon3F poly = polys_.at(i);
+        glBegin(GL_LINES);
+        for(int j=0;j<poly.size()-1;j++){
+            glVertex3d(poly.at(j).x(),  poly.at(j).y(),  poly.at(j).z());
+            glVertex3d(poly.at(j+1).x(),poly.at(j+1).y(),poly.at(j+1).z());
+        }
+        glEnd();
+    }
+
+    glEnable(GL_TEXTURE_2D);
+    glColor3f(1.0f, 1.0f, 1.0f);
 
     glVertexPointer(3, GL_FLOAT, 0, vertices_.constData());
     glTexCoordPointer(2, GL_FLOAT, 0, texCoords_.constData());
@@ -125,18 +142,6 @@ void GLWidget::paintGL()
         for(int i=0;i<vertices_.size()/3;i++)
             glDrawArrays(GL_TRIANGLE_FAN, i * 3, 3);
     }
-
-    /*glColor3f(0, 0, 0);
-
-    for(int i=0;i<polys_.size();i++){
-        QPolygon3F poly = polys_.at(i);
-        glBegin(GL_LINES);
-        for(int j=0;j<poly.size()-1;j++){
-            glVertex3d(poly.at(j).x(),  poly.at(j).y(),  poly.at(j).z());
-            glVertex3d(poly.at(j+1).x(),poly.at(j+1).y(),poly.at(j+1).z());
-        }
-        glEnd();
-    }*/
 }
 
 void GLWidget::resizeGL(int width, int height)
@@ -182,33 +187,9 @@ void GLWidget::mouseReleaseEvent(QMouseEvent * /* event */)
 void GLWidget::wheelEvent(QWheelEvent *event)
 {
     //TODO, zoom
-}
-
-void GLWidget::makeObject()
-{
-    static const int coords[6][4][3] = {
-        { { +1, -1, -1 }, { -1, -1, -1 }, { -1, +1, -1 }, { +1, +1, -1 } },
-        { { +1, +1, -1 }, { -1, +1, -1 }, { -1, +1, +1 }, { +1, +1, +1 } },
-        { { +1, -1, +1 }, { +1, -1, -1 }, { +1, +1, -1 }, { +1, +1, +1 } },
-        { { -1, -1, -1 }, { -1, -1, +1 }, { -1, +1, +1 }, { -1, +1, -1 } },
-        { { +1, -1, +1 }, { -1, -1, +1 }, { -1, -1, -1 }, { +1, -1, -1 } },
-        { { -1, -1, +1 }, { +1, -1, +1 }, { +1, +1, +1 }, { -1, +1, +1 } }
-    };
-
-    textures_.clear();
-    for (int j=0; j < 6; ++j) {
-        textures_ << bindTexture(QPixmap("test.jpg"), GL_TEXTURE_2D);
-    }
-
-    texCoords_.clear();
-    vertices_.clear();
-
-    for (int i = 0; i < 6; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            texCoords_.append(QVector2D(j == 0 || j == 3, (j == 0 || j == 1)));
-            vertices_.append(QVector3D(0.2 * coords[i][j][0], 0.2 * coords[i][j][1], 0.2 * coords[i][j][2]));
-        }
-    }
+    /*zoom = std::max(10.0,zoom + event->delta()/100.0);
+    qDebug() << zoom;
+    paintGL();*/
 }
 
 void  GLWidget::setVertices(QVector<QVector3D> vect)
