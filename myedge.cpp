@@ -1,6 +1,6 @@
 #include "myedge.h"
 
-MyEdge::MyEdge(MyPoint *src, MyPoint *dest, QMenu *contextMenu)
+MyEdge::MyEdge(MyPoint *src, MyPoint *dest, QMenu *contextMenu) : object(new MyEdgeObject), stitchWith_(0)
 {
     src_ = src;
     dest_ = dest;
@@ -18,9 +18,10 @@ void MyEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     if(isSelected()){
         painter->setPen( QPen(Qt::red,3) );
         painter->drawLine(src_->pos(),dest_->pos());
+    }else{
+        painter->setPen(Qt::darkGreen);
+        painter->drawLine(src_->pos(),dest_->pos());
     }
-    painter->setPen(Qt::green);
-    painter->drawLine(src_->pos(),dest_->pos());
 }
 
 QRectF MyEdge::boundingRect() const
@@ -48,6 +49,16 @@ void MyEdge::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     }else{
         QGraphicsItem::contextMenuEvent(event);
     }
+}
+
+QPointF MyEdge::getSourcePoint()
+{
+    return src_->getPoint();
+}
+
+QPointF MyEdge::getDestPoint()
+{
+    return dest_->getPoint();
 }
 
 double MyEdge::distance(QPointF pt)

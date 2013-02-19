@@ -7,19 +7,40 @@
 #include <QPainter>
 #include <QMenu>
 #include <QGraphicsSceneContextMenuEvent>
+#include <QObject>
 
 #include <QDebug>
 
 class MyPoint;
+class MyEdge;
 
 #include <mypoint.h>
 
+class MyEdgeObject : public QObject
+{
+    Q_OBJECT
+public:
+    MyEdgeObject() : show_(false) {}
+    bool show() { return show_; }
+    bool inverse() { return inverse_; }
+private:
+    bool show_;
+    bool inverse_;
+public slots:
+    void showStich(){ show_ = true; }
+    void hideStich(){ show_ = false; }
+    void setStichVisible(bool visibility) { show_ = visibility; }
+    void toggle() { inverse_ = !inverse_; }
+};
+
 class MyEdge : public QGraphicsItem
 {
-    //Q_OBJECT
 public:
     explicit MyEdge(MyPoint *src, MyPoint *dest, QMenu *contextMenu);
     QRectF boundingRect() const;
+
+    QPointF getSourcePoint();
+    QPointF getDestPoint();
 
     QPointF proj(QPointF p);
     double distance(QPointF p);
@@ -27,6 +48,9 @@ public:
     QPointF selectedPoint();
 
     void adjust();
+
+    MyEdgeObject* object;
+
 
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -36,10 +60,7 @@ private:
     MyPoint *src_,*dest_;
     QMenu *myContextMenu;
     QPointF selectedPoint_;
-    
-signals:
-    
-public slots:
+    MyEdge *stitchWith_;
     
 };
 

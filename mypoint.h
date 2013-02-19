@@ -41,6 +41,8 @@ public:
     explicit MyPoint(QPointF pt, MyPolygon *poly, int patternID, int pointID, QMenu *contextMenu = 0);
     QRectF boundingRect() const;
 
+    QPointF getPoint();
+
     void setSrcEdge(MyEdge *edge);
     void setDestEdge(MyEdge *edge);
 
@@ -55,6 +57,7 @@ protected:
 
 private:
     QMenu *myContextMenu;
+    QPointF pt_;
 
     MyEdge *srcEdge_,*destEdge_;
     MyPolygon *poly_;

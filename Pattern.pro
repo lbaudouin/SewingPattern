@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     meshing/mymeshingedge.cpp \
     meshing/mymeshingpoint.cpp \
     meshing/mymeshingpolygon.cpp \
-    meshing/mymeshingtriangle.cpp
+    meshing/mymeshingtriangle.cpp \
+    mylink.cpp
 
 HEADERS  += mainwindow.h \
     point2d.h \
@@ -47,6 +48,7 @@ HEADERS  += mainwindow.h \
     meshing/mymeshingedge.h \
     meshing/mymeshingpoint.h \
     meshing/mymeshingpolygon.h \
-    meshing/mymeshingtriangle.h
+    meshing/mymeshingtriangle.h \
+    mylink.h
 
 FORMS    += mainwindow.ui

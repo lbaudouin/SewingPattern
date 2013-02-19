@@ -12,6 +12,11 @@ MainWindow::MainWindow(QWidget *parent) :
         connect(button,SIGNAL(clicked()),this,SLOT(closePoly()));
         ui->mainToolBar->addWidget(button);
     }
+    {
+        QPushButton *button = new QPushButton("Connect");
+        connect(button,SIGNAL(clicked()),this,SLOT(connectEdges()));
+        ui->mainToolBar->addWidget(button);
+    }
 
     gl = new GLWidget(0, 0);
     gl->setClearColor(QColor(225,255,255));
@@ -89,6 +94,9 @@ MainWindow::MainWindow(QWidget *parent) :
     darkRed, darkGreen, darkBlue, darkCyan, darkMagenta, darkYellow*/
 
     //foreach(MyPattern pattern, patterns_){
+
+    QList<QList<MyEdge*> > alledges;
+
     for(int i=0;i<patterns_.size();i++){
         MyPattern *pattern = patterns_.at(i);
         MyPolygon *p = new MyPolygon(pattern,polyMenu);
@@ -112,12 +120,36 @@ MainWindow::MainWindow(QWidget *parent) :
         //foreach(MyEdge* e, edges){
             scene->addItem(edges[j]);
         }
+
+        alledges << edges;
     }
+
+    int i1 = rand()%alledges.size();
+    int i2 = rand()%(alledges.at(i1).size());
+    int i3 = rand()%alledges.size();
+    int i4 = rand()%(alledges.at(i3).size());
+
+    MyLink *link = new MyLink(alledges.at(i1).at(i2),alledges.at(i3).at(i4),0);
+    scene->addItem(link);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::connectEdges()
+{
+    QList<QGraphicsItem *> items = scene->selectedItems();
+    if(items.size()!=2){
+        QMessageBox::warning(this,tr("Warning"),tr("You have to select 2 edges"));
+    }else{
+
+        MyEdge *e1 = qgraphicsitem_cast<MyEdge *>(items[0]);
+        MyEdge *e2 = qgraphicsitem_cast<MyEdge *>(items[1]);
+        if(!e1)  QMessageBox::warning(this,tr("Warning"),tr("e1 not a edge"));
+        if(!e2)  QMessageBox::warning(this,tr("Warning"),tr("e2 not a edge"));
+    }
 }
 
 void MainWindow::pressTest()

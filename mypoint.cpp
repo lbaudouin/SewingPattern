@@ -1,6 +1,6 @@
 #include "mypoint.h"
 
-MyPoint::MyPoint(QPointF pt, MyPolygon *poly, int patternID, int pointID, QMenu *contextMenu) : srcEdge_(NULL), destEdge_(NULL), poly_(poly), patternID_(patternID), pointID_(pointID), select_(false)
+MyPoint::MyPoint(QPointF pt, MyPolygon *poly, int patternID, int pointID, QMenu *contextMenu) : pt_(pt), srcEdge_(NULL), destEdge_(NULL), poly_(poly), patternID_(patternID), pointID_(pointID), select_(false)
 {
     widget = new MyPointWidget(patternID,pointID);
     myContextMenu = contextMenu;
@@ -63,6 +63,11 @@ void MyPoint::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     QGraphicsItem::contextMenuEvent(event);
 }
 
+QPointF MyPoint::getPoint()
+{
+    return pt_;
+}
+
 void MyPoint::setSrcEdge(MyEdge *edge)
 {
     srcEdge_ = edge;
@@ -81,6 +86,7 @@ QVariant MyPoint::itemChange(GraphicsItemChange change, const QVariant &value)
         if(destEdge_) destEdge_->adjust();
         if(poly_) poly_->adjust();
         widget->pointMoved(this->pos());
+        pt_ = this->pos();
         break;
     default:
         break;

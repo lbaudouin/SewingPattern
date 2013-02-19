@@ -12,6 +12,7 @@
 #include "mypattern.h"
 #include "mypolygon.h"
 #include "mypoint.h"
+#include "mylink.h"
 #include "myedge.h"
 #include "glwidget.h"
 #include "engine.h"
@@ -69,6 +70,7 @@ private slots:
     void closePoly();
     void pointMovedInScene(int patternID, int pointID, QPointF newPos);
     void enableGrid(bool state);
+    void connectEdges();
 
 signals:
     void pointMoved(int patternID, int pointID, QPointF newPos);
