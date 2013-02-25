@@ -22,6 +22,11 @@ public:
     void adjust();
     void addPoint(MyPoint *point);
 
+    enum { Type = UserType + 3 };
+    int type() const { return Type; }
+
+    int size() { return points_.size(); }
+
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -31,6 +36,7 @@ private:
     QMenu *myContextMenu;
     MyPattern *pattern_;
     QList<MyPoint*> points_;
+    QPolygonF poly_;
 
     QColor color_;
 };

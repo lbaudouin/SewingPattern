@@ -21,21 +21,31 @@ public:
     bool isEmpty();
     bool isValid();
 
+    void display(QGraphicsScene *scene);
+
+    void addPoint(MyPoint* p) { points__.push_back(p); }
+    void addEdge(MyEdge* e) { edges__.push_back(e); }
+
     void addPoint(int id, QPointF pt);
     void addEdge(int id, int startID, int endID);
     void addCurve(int id, QList<int> points);
 
+    MyPolygon* getPoly();
     QPolygonF getPolygon();
     QString getName();
 
-    inline QMap<int,QPointF> getPoints(){return points_;}
-    inline QMap<int,QPair<int,int> > getEdges(){return edges_;}
-    inline QMap<int,QList<int> > getCurves(){return curves_;}
+    inline QMap<int,QPointF> getPoints() { return points_; }
+    inline QMap<int,QPair<int,int> > getEdges() { return edges_; }
+    inline QMap<int,QList<int> > getCurves() { return curves_; }
 
     QString getText();
 
-    void setPoint(int id, MyPoint* point);
-    QList<MyEdge*> getEdgesList(QMenu *menu = 0);
+    void setPolygon(MyPolygon* poly) { poly_ = poly; }
+
+    QList<MyEdge*> getEdgesList();
+    QList<MyPoint*> getPointsList();
+    MyEdge* getEdge(int id);
+    MyPoint* getPoint(int id);
 
     inline friend QTextStream& operator<< (QTextStream& os, const MyPattern& pattern)
     {
@@ -86,12 +96,14 @@ public:
     int id_;
     QString name_;
 
-    QMap<int,MyPoint*> refPoints_;
-
     QMap<int,QPointF> points_;
     QMap<int,QPair<int,int> > edges_;
     QMap<int,QList<int> > curves_;
 private:
+
+    QList<MyPoint*> points__;
+    QList<MyEdge*> edges__;
+    MyPolygon *poly_;
 
 public slots:
     void pointMoved(int patternID, int pointID, QPointF newPos);

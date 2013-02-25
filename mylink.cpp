@@ -4,6 +4,8 @@ MyLink::MyLink(MyEdge *src, MyEdge *dest, QMenu *contextMenu) : src_(0), dest_(0
 {
     src_ = src;
     dest_ = dest;
+    src_->addLink(this);
+    dest_->addLink(this);
     myContextMenu = contextMenu;
     setZValue(1);
     adjust();
@@ -44,6 +46,11 @@ void MyLink::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
             painter->drawLine(QLineF(a3,b3));
             painter->drawLine(QLineF(a4,b4));
         }
+
+        poly1_.clear();
+        poly2_.clear();
+        poly1_ << a1 << a4 << b1 << b4;
+        poly2_ << a1 << a4 << b4 << b1;
     }
 }
 
@@ -64,9 +71,19 @@ QRectF MyLink::boundingRect() const
 
 void MyLink::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
-    scene()->clearSelection();
-    setSelected(true);
-    myContextMenu->exec(event->screenPos());
+    if(myContextMenu==0){
+        QGraphicsItem::contextMenuEvent(event);
+        return;
+    }
+
+    QPointF pt = event->pos();
+    if(poly1_.containsPoint(pt,Qt::WindingFill) || poly2_.containsPoint(pt,Qt::WindingFill)){
+        scene()->clearSelection();
+        setSelected(true);
+        myContextMenu->exec(event->screenPos());
+    }else{
+        QGraphicsItem::contextMenuEvent(event);
+    }
 }
 
 void MyLink::adjust()

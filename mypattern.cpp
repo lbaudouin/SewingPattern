@@ -1,7 +1,8 @@
 #include "mypattern.h"
 
-MyPattern::MyPattern(int id, QString name) : id_(id), name_(name)
+MyPattern::MyPattern(int id, QString name) : id_(id), name_(name), poly_(0)
 {
+
 }
 
 void MyPattern::addPoint(int id, QPointF pt)
@@ -32,6 +33,11 @@ bool MyPattern::isValid()
 QString MyPattern::getName()
 {
     return name_;
+}
+
+MyPolygon*  MyPattern::getPoly()
+{
+    return poly_;
 }
 
 QPolygonF MyPattern::getPolygon()
@@ -105,21 +111,40 @@ QString MyPattern::getText()
     return text;
 }
 
-void MyPattern::setPoint(int id, MyPoint *point)
+MyEdge* MyPattern::getEdge(int id)
 {
-    refPoints_.insert(id,point);
-    //qDebug() << "Add point " << id;
+    if(id<edges__.size())
+        return edges__.at(id);
+    else
+        return 0;
 }
 
-QList<MyEdge*> MyPattern::getEdgesList(QMenu *menu)
+MyPoint* MyPattern::getPoint(int id)
 {
-    QList<MyEdge*> list;
-    QList<QPair<int,int> > edges = edges_.values();
-    for(int i=0;i<edges.size();i++){
-        if(!refPoints_.contains(edges[i].first)) qDebug() << "Point " << edges[i].first << " not existing";
-        if(!refPoints_.contains(edges[i].second)) qDebug() << "Point " << edges[i].second << " not existing";
-        MyEdge* e = new MyEdge(refPoints_[edges[i].first],refPoints_[edges[i].second],menu);
-        list << e;
-    }
-    return list;
+    if(id<points__.size())
+        return points__.at(id);
+    else
+        return 0;
+}
+
+QList<MyPoint*> MyPattern::getPointsList()
+{
+    return points__;
+}
+
+QList<MyEdge*> MyPattern::getEdgesList()
+{
+    return edges__;
+}
+
+void MyPattern::display(QGraphicsScene *scene)
+{
+    for(int i=0;i<points__.size();i++)
+        if(points__.at(i))
+            scene->addItem(points__.at(i));
+    for(int i=0;i<edges__.size();i++)
+        if(edges__.at(i))
+            scene->addItem(edges__.at(i));
+    if(poly_)
+        scene->addItem(poly_);
 }

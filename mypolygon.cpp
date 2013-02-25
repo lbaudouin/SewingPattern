@@ -11,6 +11,7 @@ MyPolygon::MyPolygon(MyPattern *pattern, QMenu *contextMenu)
 
 void MyPolygon::addPoint(MyPoint *point)
 {
+    point->setPolygon(this);
     points_ << point;
 }
 
@@ -62,7 +63,7 @@ void MyPolygon::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void MyPolygon::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
-    painter->save();
+    //painter->save();
     Q_UNUSED(option);
     QColor color = color_;
     if(isSelected())
@@ -71,26 +72,31 @@ void MyPolygon::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         color.setAlpha(50);
     painter->setPen(Qt::NoPen);
     painter->setBrush(color);
-    painter->drawPolygon(pattern_->getPolygon(),Qt::WindingFill);
+
+    poly_.clear();
+    for(int i=0;i<points_.size();i++)
+        poly_ << points_.at(i)->getPoint();
+
+    painter->drawPolygon(poly_,Qt::WindingFill);
 
     painter->setPen(Qt::black);
 
     //qDebug() << pattern_->getName();
     //QRect rect(0,0,200,50);
     //painter->drawText(rect, Qt::AlignCenter, pattern_->getName());
-    painter->drawText(pattern_->getPolygon().boundingRect(), Qt::AlignCenter, pattern_->getName());
+    painter->drawText(poly_.boundingRect(), Qt::AlignCenter, pattern_->getName());
     //painter->drawText(QRect(pattern_->getPolygon().at(0).toPoint(),QSize(200,50)), Qt::AlignCenter, pattern_->getName());
-    painter->restore();
+    //painter->restore();
 }
 
 QRectF MyPolygon::boundingRect() const
 {
-    return pattern_->getPolygon().boundingRect();
+    return poly_.boundingRect();
 }
 
 void MyPolygon::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
-    if(pattern_->getPolygon().containsPoint(event->scenePos(),Qt::WindingFill)){
+    if(poly_.containsPoint(event->scenePos(),Qt::WindingFill)){
         scene()->clearSelection();
         setSelected(true);
         myContextMenu->exec(event->screenPos());

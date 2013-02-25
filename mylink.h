@@ -31,6 +31,9 @@ public:
 
     MyLinkObject* object;
 
+    enum { Type = UserType + 4 };
+    int type() const { return Type; }
+
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
@@ -38,6 +41,7 @@ protected:
 private:
     MyEdge *src_,*dest_;
     QMenu *myContextMenu;
+    QPolygonF poly1_,poly2_;
 };
 
 #endif // MYLINK_H

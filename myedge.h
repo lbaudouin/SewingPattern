@@ -15,6 +15,7 @@ class MyPoint;
 class MyEdge;
 
 #include <mypoint.h>
+#include "mylink.h"
 
 class MyEdgeObject : public QObject
 {
@@ -51,6 +52,12 @@ public:
 
     MyEdgeObject* object;
 
+    void addLink(MyLink *link){
+        link_ = link;
+    }
+
+    enum { Type = UserType + 2 };
+    int type() const { return Type; }
 
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -61,6 +68,7 @@ private:
     QMenu *myContextMenu;
     QPointF selectedPoint_;
     MyEdge *stitchWith_;
+    MyLink *link_;
     
 };
 

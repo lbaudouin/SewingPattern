@@ -12,6 +12,18 @@ MyPoint::MyPoint(QPointF pt, MyPolygon *poly, int patternID, int pointID, QMenu 
     this->setPos(pt);
 }
 
+MyPoint::MyPoint(QPointF pt, MyPattern *pattern, int pointID, QMenu *contextMenu) : pt_(pt), srcEdge_(NULL), destEdge_(NULL), pattern_(pattern), pointID_(pointID), select_(false)
+{
+    widget = new MyPointWidget(-1,pointID);
+    myContextMenu = contextMenu;
+    poly_ = pattern_->getPoly();
+    setFlag(QGraphicsItem::ItemIsMovable, true);
+    setFlag(QGraphicsItem::ItemIsSelectable, true);
+    setFlag(ItemSendsGeometryChanges);
+    setZValue(2);
+    this->setPos(pt);
+}
+
 void MyPoint::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
     Q_UNUSED(option);

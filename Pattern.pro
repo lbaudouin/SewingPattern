@@ -52,3 +52,5 @@ HEADERS  += mainwindow.h \
     mylink.h
 
 FORMS    += mainwindow.ui
+
+OTHER_FILES += test.txt

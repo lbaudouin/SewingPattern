@@ -10,6 +10,7 @@ class MyPolygon;
 
 #include "myedge.h"
 #include "mypolygon.h"
+#include "mypattern.h"
 
 QT_BEGIN_NAMESPACE
 class QGraphicsSceneMouseEvent;
@@ -39,6 +40,7 @@ class MyPoint : public QGraphicsItem
     //Q_OBJECT
 public:
     explicit MyPoint(QPointF pt, MyPolygon *poly, int patternID, int pointID, QMenu *contextMenu = 0);
+    explicit MyPoint(QPointF pt, MyPattern *pattern, int pointID, QMenu *contextMenu = 0);
     QRectF boundingRect() const;
 
     QPointF getPoint();
@@ -47,6 +49,11 @@ public:
     void setDestEdge(MyEdge *edge);
 
     MyPointWidget *widget;
+
+    enum { Type = UserType + 1 };
+    int type() const { return Type; }
+
+    void setPolygon(MyPolygon* poly) { poly_ = poly; }
     
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -61,6 +68,7 @@ private:
 
     MyEdge *srcEdge_,*destEdge_;
     MyPolygon *poly_;
+    MyPattern *pattern_;
     int patternID_,pointID_;
 
     bool select_;

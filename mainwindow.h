@@ -51,11 +51,13 @@ private:
     QList<MyPoint*> allPoints_;
     QList<MyEdge*> allEdges_;
     QList<MyPoint*> listPoint;
-    QMenu *nodeMenu,*edgeMenu,*polyMenu;
-    QAction *deleteAction,*splitAction,*closeAction,*transformAction;
+    QMenu *nodeMenu,*edgeMenu,*polyMenu,*linkMenu;
+    QAction *deleteAction,*splitAction,*closeAction,*transformAction,*swapAction,*moveAction,*renameAction;
 
 
     QList<MyPattern*> patterns_;
+    QList< QPair<MyEdge*,MyEdge*> > link_;
+
     QList<MyPolygon*> polygons_;
 
     GLWidget *gl;

@@ -46,91 +46,46 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->mainToolBar->addWidget(button);
     }
 
-    nodeMenu = new QMenu(this);
     deleteAction = new QAction("Delete",this);
+    splitAction = new QAction("Split",this);
+    transformAction = new QAction("Transform",this);
+    closeAction = new QAction("Close Polygon",this);
+    swapAction = new QAction("Swap",this);
+    moveAction = new QAction("Move",this);
+    renameAction = new QAction("Rename",this);
+
+    splitAction->setStatusTip(tr("Split edge here"));
     deleteAction->setShortcut(tr("Delete"));
     deleteAction->setStatusTip(tr("Delete item from diagram"));
-    //connect(deleteAction, SIGNAL(triggered()), this, SLOT(deleteItem()));
+
+    nodeMenu = new QMenu(this);
     nodeMenu->addAction( deleteAction );
 
     edgeMenu = new QMenu(this);
     edgeMenu->addAction( deleteAction );
-    splitAction = new QAction("Split",this);
-    //splitAction->setShortcut(tr("Split"));
-    splitAction->setStatusTip(tr("Split edge here"));
-    //connect(splitAction, SIGNAL(triggered()), this, SLOT(deleteItem()));
     edgeMenu->addAction( splitAction );
-    transformAction = new QAction("Transform",this);
     edgeMenu->addAction( transformAction );
 
-
     polyMenu = new QMenu(this);
+    polyMenu->addAction( moveAction );
     polyMenu->addAction( deleteAction );
-    closeAction = new QAction("Close Polygon",this);
     polyMenu->addAction( closeAction );
+    polyMenu->addAction( renameAction );
 
+    linkMenu =  new QMenu(this);
+    linkMenu->addAction( deleteAction );
+    linkMenu->addAction( swapAction );
 
     connect(ui->buttonTest,SIGNAL(clicked()),this,SLOT(pressTest()));
     connect(ui->button3D,SIGNAL(clicked()),this,SLOT(pressSimu()));
     connect(ui->buttonSave,SIGNAL(clicked()),this,SLOT(pressSave()));
     //connect(scene,SIGNAL(middleClicked(QPointF)),this,SLOT(addPoint(QPointF)));
 
-   /* MyPattern p(0,"Test pattern");
-    p.addPoint(0,QPointF(0,0));
-    p.addPoint(1,QPointF(100,0));
-    p.addPoint(2,QPointF(100,100));
-    p.addPoint(3,QPointF(0,100));
-    patterns_.push_back(p);
-
-    saveFile("test.txt");*/
-
     loadFile("test.txt");
 
-    QList<QColor> colors;
-    colors << Qt::blue << Qt::green << Qt::yellow << Qt::magenta << Qt::gray << Qt::cyan << Qt::red << Qt::black;
+    for(int i=0;i<patterns_.size();i++)
+        patterns_.at(i)->display(scene);
 
-    /*black, white, darkGray, gray, lightGray,
-    red, green, blue, cyan, magenta, yellow,
-    darkRed, darkGreen, darkBlue, darkCyan, darkMagenta, darkYellow*/
-
-    //foreach(MyPattern pattern, patterns_){
-
-    QList<QList<MyEdge*> > alledges;
-
-    for(int i=0;i<patterns_.size();i++){
-        MyPattern *pattern = patterns_.at(i);
-        MyPolygon *p = new MyPolygon(pattern,polyMenu);
-        p->setColor(colors.at(i%colors.size()));
-        polygons_ << p;
-        scene->addItem(p);
-        QMap<int,QPointF> pts = pattern->getPoints();
-        QList<int> keys = pts.keys();
-        for(int j=0;j<keys.size();j++){
-            int key = keys.at(j);
-            MyPoint * pt = new MyPoint(pts[key],p,pattern->id_,key,nodeMenu);
-            connect(pt->widget,SIGNAL(moved(int,int,QPointF)),this,SLOT(pointMovedInScene(int,int,QPointF)));
-            connect(this,SIGNAL(gridEnabled(bool)),pt->widget,SLOT(setUseGrid(bool)));
-            pattern->setPoint(key,pt);
-            scene->addItem(pt);
-            //allPoints_ << addPoint(pts[keys.at(i)],pattern->id_,keys.at(i));
-        }
-        QList<MyEdge*> edges = pattern->getEdgesList(edgeMenu);
-        //qDebug() << "Add " << edges.size() << " edges";
-        for(int j=0;j<edges.size();j++){
-        //foreach(MyEdge* e, edges){
-            scene->addItem(edges[j]);
-        }
-
-        alledges << edges;
-    }
-
-    int i1 = rand()%alledges.size();
-    int i2 = rand()%(alledges.at(i1).size());
-    int i3 = rand()%alledges.size();
-    int i4 = rand()%(alledges.at(i3).size());
-
-    MyLink *link = new MyLink(alledges.at(i1).at(i2),alledges.at(i3).at(i4),0);
-    scene->addItem(link);
 }
 
 MainWindow::~MainWindow()
@@ -144,11 +99,9 @@ void MainWindow::connectEdges()
     if(items.size()!=2){
         QMessageBox::warning(this,tr("Warning"),tr("You have to select 2 edges"));
     }else{
-
         MyEdge *e1 = qgraphicsitem_cast<MyEdge *>(items[0]);
         MyEdge *e2 = qgraphicsitem_cast<MyEdge *>(items[1]);
-        if(!e1)  QMessageBox::warning(this,tr("Warning"),tr("e1 not a edge"));
-        if(!e2)  QMessageBox::warning(this,tr("Warning"),tr("e2 not a edge"));
+        if(!e1 || !e2) {QMessageBox::warning(this,tr("Warning"),tr("You have to select 2 edges")); return;}
     }
 }
 
@@ -207,6 +160,15 @@ void MainWindow::closePoly()
 
 void MainWindow::loadFile(QString filename)
 {
+    QList<QColor> colors;
+    colors << Qt::blue << Qt::green << Qt::yellow << Qt::magenta << Qt::gray << Qt::cyan << Qt::red << Qt::black;
+
+    /*black, white, darkGray, gray, lightGray,
+    red, green, blue, cyan, magenta, yellow,
+    darkRed, darkGreen, darkBlue, darkCyan, darkMagenta, darkYellow*/
+
+    int nb = 0;
+
     QFile file(filename);
     if(file.open(QFile::ReadOnly)){
 
@@ -229,6 +191,7 @@ void MainWindow::loadFile(QString filename)
                 name = name.trimmed();
                 if(pattern->isValid())
                     patterns_.push_back(pattern);
+
                 pattern = new MyPattern(id,name);
             }else
             if(items.at(0)=="POINT"){
@@ -237,10 +200,17 @@ void MainWindow::loadFile(QString filename)
                     return;
                 }
                 int id = items.at(1).toInt();
-                QPointF point;
-                point.setX( items.at(2).toDouble() );
-                point.setY( items.at(3).toDouble() );
-                pattern->addPoint(id,point);
+
+                QPointF point ( items.at(2).toDouble() , items.at(3).toDouble() );
+                //pattern->addPoint(id,point);
+
+                MyPoint *pt = new MyPoint(point,pattern,id,nodeMenu);
+                connect(pt->widget,SIGNAL(moved(int,int,QPointF)),this,SLOT(pointMovedInScene(int,int,QPointF)));
+                connect(this,SIGNAL(gridEnabled(bool)),pt->widget,SLOT(setUseGrid(bool)));
+
+                pattern->addPoint(pt);
+
+                //pattern->setPoint(key,pt);
             }else
             if(items.at(0)=="EDGE"){
                 if(!pattern->isValid()){
@@ -250,7 +220,18 @@ void MainWindow::loadFile(QString filename)
                 int id = items.at(1).toInt();
                 int startID =  items.at(2).toInt();
                 int endID =  items.at(3).toInt();
-                pattern->addEdge(id,startID,endID);
+
+                //Use index and not ID
+                MyPoint* p1 = pattern->getPoint(startID);
+                MyPoint* p2 = pattern->getPoint(endID);
+                if(!p1||!p2){
+                    qDebug() << "Error, MyPoint doesn't exist";
+                    continue;
+                }
+                MyEdge* e = new MyEdge(p1,p2,edgeMenu);
+                pattern->addEdge(e);
+
+                //pattern->addEdge(id,startID,endID);
             }else
             if(items.at(0)=="CURVE"){
                 if(!pattern->isValid()){
@@ -261,8 +242,29 @@ void MainWindow::loadFile(QString filename)
                 QList<int> list;
                 for(int i=2;i<items.size();i++)
                     list << items.at(i).toInt();
-                pattern->addCurve(id,list);
-            }
+                //pattern->addCurve(id,list);
+            }else
+                if(items.at(0)=="POLYGON"){
+                    if(!pattern->isValid()){
+                        QMessageBox::critical(this,tr("Error"),tr("Invalid pattern on loading"));
+                        return;
+                    }
+                    QList<int> list;
+                    for(int i=1;i<items.size();i++)
+                        list << items.at(i).toInt();
+
+                    MyPolygon *p = new MyPolygon(pattern,polyMenu);
+
+                    for(int i=0;i<list.size();i++){
+                        MyPoint *pt = pattern->getPoint(list.at(i));
+                        if(pt)
+                            p->addPoint( pt );
+                    }
+
+                    p->setColor(colors.at(nb++%colors.size()));
+
+                    pattern->setPolygon(p);
+                }
         }
 
         if(pattern->isValid())

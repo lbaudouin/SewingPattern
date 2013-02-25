@@ -1,6 +1,6 @@
 #include "myedge.h"
 
-MyEdge::MyEdge(MyPoint *src, MyPoint *dest, QMenu *contextMenu) : object(new MyEdgeObject), stitchWith_(0)
+MyEdge::MyEdge(MyPoint *src, MyPoint *dest, QMenu *contextMenu) : object(new MyEdgeObject), stitchWith_(0), link_(0)
 {
     src_ = src;
     dest_ = dest;
@@ -98,4 +98,6 @@ QPointF MyEdge::selectedPoint()
 void MyEdge::adjust()
 {
     prepareGeometryChange();
+    if(link_!=0)
+        link_->adjust();
 }
