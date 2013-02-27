@@ -4,12 +4,20 @@ MyLink::MyLink(MyEdge *src, MyEdge *dest, QMenu *contextMenu) : src_(0), dest_(0
 {
     src_ = src;
     dest_ = dest;
-    src_->addLink(this);
-    dest_->addLink(this);
+    src_->setLink(this);
+    dest_->setLink(this);
     myContextMenu = contextMenu;
     setZValue(1);
     adjust();
     setFlag(QGraphicsItem::ItemIsSelectable, true);
+}
+
+void MyLink::remove()
+{
+    src_->setLink(0);
+    dest_->setLink(0);
+    if(scene())
+        scene()->removeItem(this);
 }
 
 void MyLink::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
@@ -89,4 +97,13 @@ void MyLink::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 void MyLink::adjust()
 {
     prepareGeometryChange();
+}
+
+QString MyLink::getText()
+{
+    int srcPattern = 0;
+    int srcEdge = 0;
+    int destPattern = 0;
+    int destEdge = 0;
+    return QString("%1 %2 %3 %4\n").arg(QString::number(srcPattern),QString::number(srcEdge),QString::number(destPattern),QString::number(destEdge));
 }

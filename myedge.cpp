@@ -1,6 +1,6 @@
 #include "myedge.h"
 
-MyEdge::MyEdge(MyPoint *src, MyPoint *dest, QMenu *contextMenu) : object(new MyEdgeObject), stitchWith_(0), link_(0)
+MyEdge::MyEdge(MyPoint *src, MyPoint *dest, MyPattern *pattern, int edgeID, QMenu *contextMenu) : object(new MyEdgeObject), stitchWith_(0), link_(0), pattern_(pattern), edgeID_(edgeID)
 {
     src_ = src;
     dest_ = dest;
@@ -10,6 +10,14 @@ MyEdge::MyEdge(MyPoint *src, MyPoint *dest, QMenu *contextMenu) : object(new MyE
     setZValue(1);
     adjust();
     setFlag(QGraphicsItem::ItemIsSelectable, true);
+}
+
+void MyEdge::remove()
+{
+    src_ = 0;
+    dest_ = 0;
+    if(scene())
+        scene()->removeItem(this);
 }
 
 void MyEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)

@@ -14,8 +14,9 @@
 class MyPoint;
 class MyEdge;
 
-#include <mypoint.h>
+#include "mypoint.h"
 #include "mylink.h"
+#include "mypattern.h"
 
 class MyEdgeObject : public QObject
 {
@@ -37,7 +38,7 @@ public slots:
 class MyEdge : public QGraphicsItem
 {
 public:
-    explicit MyEdge(MyPoint *src, MyPoint *dest, QMenu *contextMenu);
+    explicit MyEdge(MyPoint *src, MyPoint *dest, MyPattern *pattern, int edgeID, QMenu *contextMenu);
     QRectF boundingRect() const;
 
     QPointF getSourcePoint();
@@ -52,12 +53,14 @@ public:
 
     MyEdgeObject* object;
 
-    void addLink(MyLink *link){
+    void setLink(MyLink *link){
         link_ = link;
     }
 
     enum { Type = UserType + 2 };
     int type() const { return Type; }
+
+    void remove();
 
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -69,6 +72,8 @@ private:
     QPointF selectedPoint_;
     MyEdge *stitchWith_;
     MyLink *link_;
+    MyPattern *pattern_;
+    int edgeID_;
     
 };
 

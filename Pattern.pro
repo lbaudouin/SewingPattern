@@ -12,8 +12,6 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    point2d.cpp \
-    edge.cpp \
     meshing/meshing.cpp \
     patternscene.cpp \
     mypoint.cpp \
@@ -32,8 +30,6 @@ SOURCES += main.cpp\
     mylink.cpp
 
 HEADERS  += mainwindow.h \
-    point2d.h \
-    edge.h \
     meshing/meshing.h \
     patternscene.h \
     mypoint.h \

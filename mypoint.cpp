@@ -1,17 +1,5 @@
 #include "mypoint.h"
 
-MyPoint::MyPoint(QPointF pt, MyPolygon *poly, int patternID, int pointID, QMenu *contextMenu) : pt_(pt), srcEdge_(NULL), destEdge_(NULL), poly_(poly), patternID_(patternID), pointID_(pointID), select_(false)
-{
-    widget = new MyPointWidget(patternID,pointID);
-    myContextMenu = contextMenu;
-    poly->addPoint(this);
-    setFlag(QGraphicsItem::ItemIsMovable, true);
-    setFlag(QGraphicsItem::ItemIsSelectable, true);
-    setFlag(ItemSendsGeometryChanges);
-    setZValue(2);
-    this->setPos(pt);
-}
-
 MyPoint::MyPoint(QPointF pt, MyPattern *pattern, int pointID, QMenu *contextMenu) : pt_(pt), srcEdge_(NULL), destEdge_(NULL), pattern_(pattern), pointID_(pointID), select_(false)
 {
     widget = new MyPointWidget(-1,pointID);
@@ -22,6 +10,20 @@ MyPoint::MyPoint(QPointF pt, MyPattern *pattern, int pointID, QMenu *contextMenu
     setFlag(ItemSendsGeometryChanges);
     setZValue(2);
     this->setPos(pt);
+}
+
+void MyPoint::remove()
+{
+    if(srcEdge_){
+        srcEdge_->remove();
+        srcEdge_ = 0;
+    }
+    if(destEdge_){
+        destEdge_->remove();
+        destEdge_ = 0;
+    }
+    if(scene())
+        scene()->removeItem(this);
 }
 
 void MyPoint::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
@@ -72,7 +74,7 @@ void MyPoint::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     setSelected(true);
     myContextMenu->exec(event->screenPos());
 
-    QGraphicsItem::contextMenuEvent(event);
+    //QGraphicsItem::contextMenuEvent(event);
 }
 
 QPointF MyPoint::getPoint()

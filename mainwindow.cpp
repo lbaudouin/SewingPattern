@@ -3,13 +3,12 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow), first(true)
+    ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     this->setWindowState(Qt::WindowMaximized);
     {
         QPushButton *button = new QPushButton("New Polygon");
-        connect(button,SIGNAL(clicked()),this,SLOT(closePoly()));
         ui->mainToolBar->addWidget(button);
     }
     {
@@ -47,16 +46,24 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     deleteAction = new QAction("Delete",this);
+    connect(deleteAction,SIGNAL(triggered()),this,SLOT(actionDelete()));
     splitAction = new QAction("Split",this);
+    connect(splitAction,SIGNAL(triggered()),this,SLOT(actionSplit()));
     transformAction = new QAction("Transform",this);
+    connect(transformAction,SIGNAL(triggered()),this,SLOT(actionTransform()));
     closeAction = new QAction("Close Polygon",this);
+    connect(closeAction,SIGNAL(triggered()),this,SLOT(actionClose()));
     swapAction = new QAction("Swap",this);
+    connect(swapAction,SIGNAL(triggered()),this,SLOT(actionSwap()));
     moveAction = new QAction("Move",this);
+    connect(moveAction,SIGNAL(triggered()),this,SLOT(actionMove()));
     renameAction = new QAction("Rename",this);
+    connect(renameAction,SIGNAL(triggered()),this,SLOT(actionRename()));
 
     splitAction->setStatusTip(tr("Split edge here"));
     deleteAction->setShortcut(tr("Delete"));
     deleteAction->setStatusTip(tr("Delete item from diagram"));
+
 
     nodeMenu = new QMenu(this);
     nodeMenu->addAction( deleteAction );
@@ -102,6 +109,9 @@ void MainWindow::connectEdges()
         MyEdge *e1 = qgraphicsitem_cast<MyEdge *>(items[0]);
         MyEdge *e2 = qgraphicsitem_cast<MyEdge *>(items[1]);
         if(!e1 || !e2) {QMessageBox::warning(this,tr("Warning"),tr("You have to select 2 edges")); return;}
+        MyLink *link = new MyLink(e1,e2,linkMenu);
+        scene->addItem(link);
+        links_.push_back(link);
     }
 }
 
@@ -131,31 +141,6 @@ void MainWindow::pressTest()
             polyDraw << scene->addPolygon(triangles.at(i),QPen(QColor(rand()%200,rand()%200,rand()%200)));
         }
     }
-}
-
-MyPoint* MainWindow::addPoint(QPointF pt, int patternID, int pointID)
-{
-    MyPoint *p = new MyPoint(pt,polygons_[0],patternID,pointID,nodeMenu);
-    connect(p->widget,SIGNAL(moved(int,int,QPointF)),this,SLOT(pointMovedInScene(int,int,QPointF)));
-    scene->addItem(p);
-
-    /*if(!listPoint.isEmpty()){
-        MyPoint *p2 = listPoint.at(listPoint.size()-1);
-        MyEdge *e = new MyEdge(p,p2,edgeMenu);
-        scene->addItem(e);
-    }*/
-
-    listPoint.push_back(p);
-
-    return p;
-}
-
-void MainWindow::closePoly()
-{
-    if(first)
-        return;
-    scene->addItem( new Edge(ref,ref->getLast(),ui->graphicsView) );
-    first = true;
 }
 
 void MainWindow::loadFile(QString filename)
@@ -228,7 +213,7 @@ void MainWindow::loadFile(QString filename)
                     qDebug() << "Error, MyPoint doesn't exist";
                     continue;
                 }
-                MyEdge* e = new MyEdge(p1,p2,edgeMenu);
+                MyEdge* e = new MyEdge(p1,p2,pattern,id,edgeMenu);
                 pattern->addEdge(e);
 
                 //pattern->addEdge(id,startID,endID);
@@ -269,9 +254,6 @@ void MainWindow::loadFile(QString filename)
 
         if(pattern->isValid())
             patterns_.push_back(pattern);
-
-        for(int i=0;i<patterns_.size();i++)
-            connect(this,SIGNAL(pointMoved(int,int,QPointF)),patterns_[i],SLOT(pointMoved(int,int,QPointF)));
     }else{
         qDebug() << "Error on file loading";
     }
@@ -289,6 +271,9 @@ void MainWindow::saveFile(QString filename)
     QTextStream out(&file);
     for(int i=0;i<patterns_.size();i++)
         out << patterns_.at(i)->getText();
+    for(int i=0;i<links_.size();i++){
+        out << links_.at(i)->getText();
+    }
     file.close();
 }
 
@@ -324,7 +309,7 @@ void MainWindow::pressSimu()
         for(int i=0;i<pts.size();i++)
             texCoords << 0.01*QVector2D(pts.at(i).x(),pts.at(i).y());
         QPolygon3F poly;
-        pts = patterns_.at(k)->getPoints().values();
+        pts = patterns_.at(k)->getPoints();
         for(int i=0;i<pts.size();i++)
             poly << 0.002*QVector3D(pts.at(i).x(),pts.at(i).y(),0.0);
         polys << poly;
@@ -347,4 +332,76 @@ void MainWindow::pressSimu()
 void MainWindow::enableGrid(bool state)
 {
     emit this->gridEnabled(state);
+}
+
+void MainWindow::actionSwap()
+{
+    QList<QGraphicsItem *> items = scene->selectedItems();
+    MyLink *l = qgraphicsitem_cast<MyLink*>(items[0]);
+    if(!l) return;
+    l->object->toggle();
+    l->update();
+}
+
+void MainWindow::actionDelete()
+{
+    QList<QGraphicsItem *> items = scene->selectedItems();
+
+    //If MyLink
+    MyLink *l = qgraphicsitem_cast<MyLink*>(items[0]);
+    if(l!=0){
+        l->remove();
+        links_.removeAll(l);
+        return;
+    }
+    //If MyEdge
+    MyPoint *p = qgraphicsitem_cast<MyPoint*>(items[0]);
+    if(p!=0){
+        p->remove();
+        return;
+    }
+    //If MyEdge
+    MyEdge *e = qgraphicsitem_cast<MyEdge*>(items[0]);
+    if(e!=0){
+        e->remove();
+        return;
+    }
+    //If MyPolygon
+    MyPolygon *po = qgraphicsitem_cast<MyPolygon*>(items[0]);
+    if(po!=0){
+        po->remove();
+        patterns_.removeAll(po->getPattern());
+        return;
+    }
+}
+
+void MainWindow::actionRename()
+{
+    QList<QGraphicsItem *> items = scene->selectedItems();
+    //If MyPolygon
+    MyPolygon *po = qgraphicsitem_cast<MyPolygon*>(items[0]);
+    if(po!=0){
+        QString name = QInputDialog::getText(this,tr("New name"),tr("Enter a new same for this pattern"));
+        po->getPattern()->setName(name);
+    }
+}
+
+void MainWindow::actionClose()
+{
+
+}
+
+void MainWindow::actionMove()
+{
+
+}
+
+void MainWindow::actionTransform()
+{
+
+}
+
+void MainWindow::actionSplit()
+{
+
 }

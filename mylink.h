@@ -34,6 +34,10 @@ public:
     enum { Type = UserType + 4 };
     int type() const { return Type; }
 
+    QString getText();
+
+    void remove();
+
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);

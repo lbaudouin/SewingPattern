@@ -39,7 +39,6 @@ class MyPoint : public QGraphicsItem
 {
     //Q_OBJECT
 public:
-    explicit MyPoint(QPointF pt, MyPolygon *poly, int patternID, int pointID, QMenu *contextMenu = 0);
     explicit MyPoint(QPointF pt, MyPattern *pattern, int pointID, QMenu *contextMenu = 0);
     QRectF boundingRect() const;
 
@@ -54,6 +53,8 @@ public:
     int type() const { return Type; }
 
     void setPolygon(MyPolygon* poly) { poly_ = poly; }
+
+    void remove();
     
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -69,7 +70,7 @@ private:
     MyEdge *srcEdge_,*destEdge_;
     MyPolygon *poly_;
     MyPattern *pattern_;
-    int patternID_,pointID_;
+    int pointID_;
 
     bool select_;
 

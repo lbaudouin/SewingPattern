@@ -27,6 +27,12 @@ public:
 
     int size() { return points_.size(); }
 
+    QPolygonF getPolygon() {return poly_;}
+
+    MyPattern* getPattern() {return pattern_;}
+
+    void remove();
+
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

@@ -2,8 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "point2d.h"
-#include "edge.h"
 #include "meshing/meshing.h"
 #include "patternscene.h"
 #include <QDebug>
@@ -36,29 +34,17 @@ protected:
     
 private:
     Ui::MainWindow *ui;
-    QList<Point2D*> currentPoly;
     QList< QPolygonF > polys;
     PatternScene *scene;
-    int n;
-    QList<Point2D*> points;
-
-    QList<Point2D*> allref;
-    Point2D *ref;
-    bool first;
 
     QList<QGraphicsPolygonItem*> polyDraw;
 
-    QList<MyPoint*> allPoints_;
-    QList<MyEdge*> allEdges_;
-    QList<MyPoint*> listPoint;
     QMenu *nodeMenu,*edgeMenu,*polyMenu,*linkMenu;
     QAction *deleteAction,*splitAction,*closeAction,*transformAction,*swapAction,*moveAction,*renameAction;
 
 
     QList<MyPattern*> patterns_;
-    QList< QPair<MyEdge*,MyEdge*> > link_;
-
-    QList<MyPolygon*> polygons_;
+    QList<MyLink*> links_;
 
     GLWidget *gl;
 
@@ -68,11 +54,17 @@ private slots:
     void pressTest();
     void pressSimu();
     void pressSave();
-    MyPoint* addPoint(QPointF pt, int patternID, int pointID);
-    void closePoly();
     void pointMovedInScene(int patternID, int pointID, QPointF newPos);
     void enableGrid(bool state);
     void connectEdges();
+
+    void actionSwap();
+    void actionDelete();
+    void actionRename();
+    void actionSplit();
+    void actionClose();
+    void actionMove();
+    void actionTransform();
 
 signals:
     void pointMoved(int patternID, int pointID, QPointF newPos);

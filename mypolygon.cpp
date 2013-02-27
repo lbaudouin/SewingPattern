@@ -9,6 +9,16 @@ MyPolygon::MyPolygon(MyPattern *pattern, QMenu *contextMenu)
     setZValue(-1);
 }
 
+void MyPolygon::remove()
+{
+    for(int i=0;i<points_.size();i++)
+        points_.at(i)->remove();
+    points_.clear();
+
+    if(scene())
+        scene()->removeItem(this);
+}
+
 void MyPolygon::addPoint(MyPoint *point)
 {
     point->setPolygon(this);
