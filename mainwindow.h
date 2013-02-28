@@ -12,6 +12,7 @@
 #include "mypoint.h"
 #include "mylink.h"
 #include "myedge.h"
+#include "mycurve.h"
 #include "glwidget.h"
 #include "engine.h"
 #include "grid.h"

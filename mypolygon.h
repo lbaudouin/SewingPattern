@@ -22,6 +22,8 @@ public:
     void adjust();
     void addPoint(MyPoint *point);
 
+    MyPoint* getPoint(int index) {return points_.at(index);}
+
     enum { Type = UserType + 3 };
     int type() const { return Type; }
 

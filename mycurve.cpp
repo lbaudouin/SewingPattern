@@ -1,18 +1,16 @@
-#include "myedge.h"
+#include "mycurve.h"
 
-MyEdge::MyEdge(MyPoint *src, MyPoint *dest, MyPattern *pattern, int edgeID, QMenu *contextMenu) : object(new MyEdgeObject), stitchWith_(0), link_(0), pattern_(pattern), edgeID_(edgeID)
+MyCurve::MyCurve(MyPoint *src, MyPoint *dest, MyPattern *pattern, int edgeID, QMenu *contextMenu) : object(new MyCurveObject), stitchWith_(0), link_(0), pattern_(pattern), curveID_(edgeID)
 {
     src_ = src;
     dest_ = dest;
-    src_->setDestEdge(this);
-    dest_->setSrcEdge(this);
     myContextMenu = contextMenu;
     setZValue(1);
     adjust();
     setFlag(QGraphicsItem::ItemIsSelectable, true);
 }
 
-void MyEdge::remove()
+void MyCurve::remove()
 {
     src_ = 0;
     dest_ = 0;
@@ -20,7 +18,7 @@ void MyEdge::remove()
         scene()->removeItem(this);
 }
 
-void MyEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
+void MyCurve::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
     Q_UNUSED(option);
     if(isSelected()){
@@ -32,7 +30,7 @@ void MyEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     }
 }
 
-QRectF MyEdge::boundingRect() const
+QRectF MyCurve::boundingRect() const
 {
     if (!src_ || !dest_)
         return QRectF();
@@ -47,7 +45,7 @@ QRectF MyEdge::boundingRect() const
         .adjusted(-extra, -extra, extra, extra);
 }
 
-void MyEdge::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+void MyCurve::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     scene()->clearSelection();
     setSelected(true);
@@ -59,27 +57,37 @@ void MyEdge::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     }
 }
 
-QPointF MyEdge::getSourcePoint()
+QPointF MyCurve::getSourcePoint()
 {
     return src_->getPoint();
 }
 
-QPointF MyEdge::getDestPoint()
+QPointF MyCurve::getDestPoint()
 {
     return dest_->getPoint();
 }
 
-MyPoint* MyEdge::getSource()
+QPointF MyCurve::getPointF(int index)
+{
+    return points_.at(index)->getPoint();
+}
+
+MyPoint* MyCurve::getSource()
 {
     return src_;
 }
 
-MyPoint* MyEdge::getDest()
+MyPoint* MyCurve::getDest()
 {
     return dest_;
 }
 
-double MyEdge::distance(QPointF pt)
+MyPoint* MyCurve::getPoint(int index)
+{
+    return points_.at(index);
+}
+
+double MyCurve::distance(QPointF pt)
 {
     if (!src_ || !dest_)
         return 0.0;
@@ -90,7 +98,7 @@ double MyEdge::distance(QPointF pt)
 }
 
 
-QPointF MyEdge::proj(QPointF pt)
+QPointF MyCurve::proj(QPointF pt)
 {
     if (!src_ || !dest_)
         return QPointF();
@@ -108,12 +116,12 @@ QPointF MyEdge::proj(QPointF pt)
     return p;
 }
 
-QPointF MyEdge::selectedPoint()
+QPointF MyCurve::selectedPoint()
 {
     return selectedPoint_;
 }
 
-void MyEdge::adjust()
+void MyCurve::adjust()
 {
     prepareGeometryChange();
     if(link_!=0)

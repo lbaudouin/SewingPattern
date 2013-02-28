@@ -1,5 +1,5 @@
-#ifndef MYEDGE_H
-#define MYEDGE_H
+#ifndef MYCURVE_H
+#define MYCURVE_H
 
 #include <QtGui>
 #include <QGraphicsItem>
@@ -12,17 +12,17 @@
 #include <QDebug>
 
 class MyPoint;
-class MyEdge;
+class MyCurve;
 
 #include "mypoint.h"
 #include "mylink.h"
 #include "mypattern.h"
 
-class MyEdgeObject : public QObject
+class MyCurveObject : public QObject
 {
     Q_OBJECT
 public:
-    MyEdgeObject() : show_(false) {}
+    MyCurveObject() : show_(false) {}
     bool show() { return show_; }
     bool inverse() { return inverse_; }
 private:
@@ -35,16 +35,18 @@ public slots:
     void toggle() { inverse_ = !inverse_; }
 };
 
-class MyEdge : public QGraphicsItem
+class MyCurve : public QGraphicsItem
 {
 public:
-    explicit MyEdge(MyPoint *src, MyPoint *dest, MyPattern *pattern, int edgeID, QMenu *contextMenu);
+    explicit MyCurve(MyPoint *src, MyPoint *dest, MyPattern *pattern, int edgeID, QMenu *contextMenu);
     QRectF boundingRect() const;
 
     QPointF getSourcePoint();
     QPointF getDestPoint();
+    QPointF getPointF(int index);
     MyPoint* getSource();
     MyPoint* getDest();
+    MyPoint* getPoint(int index);
 
     QPointF proj(QPointF p);
     double distance(QPointF p);
@@ -53,7 +55,7 @@ public:
 
     void adjust();
 
-    MyEdgeObject* object;
+    MyCurveObject* object;
 
     void setLink(MyLink *link){
         link_ = link;
@@ -64,19 +66,22 @@ public:
 
     void remove();
 
+    int size() {return points_.size();}
+
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
 private:
     MyPoint *src_,*dest_;
+    QList<MyPoint*> points_;
     QMenu *myContextMenu;
     QPointF selectedPoint_;
-    MyEdge *stitchWith_;
+    MyCurve *stitchWith_;
     MyLink *link_;
     MyPattern *pattern_;
-    int edgeID_;
+    int curveID_;
     
 };
 
-#endif // MYEDGE_H
+#endif // MYCURVE_H

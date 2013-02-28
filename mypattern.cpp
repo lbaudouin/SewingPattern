@@ -32,22 +32,24 @@ QString MyPattern::getText()
 {
     QString text;
     text +=  QString("PATTERN %1 %2\n").arg(QString::number(id_),name_);
-    /*QList<int> ids = points_.keys();
-    for(int i=0;i<ids.size();i++){
-        text +=  QString("POINT %1 %2 %3\n").arg(QString::number(ids.at(i)),QString::number( points_[ids.at(i)].x()),QString::number(points_[ids.at(i)].y()));
+    for(int i=0;i<points_.size();i++){
+        text +=  QString("POINT %1 %2 %3\n").arg(QString::number(i),QString::number( points_[i]->getPoint().x()),QString::number(points_[i]->getPoint().y()));
     }
-    ids = edges_.keys();
-    for(int i=0;i<ids.size();i++){
-        text +=  QString("EDGE %1 %2 %3\n").arg(QString::number(ids.at(i)),QString::number( edges_[ids.at(i)].first),QString::number(edges_[ids.at(i)].second));
+    for(int i=0;i<edges_.size();i++){
+        text +=  QString("EDGE %1 %2 %3\n").arg(QString::number(i),QString::number( edges_[i]->getSource()->getID()),QString::number(edges_[i]->getDest()->getID()));
     }
-    ids = curves_.keys();
-    for(int i=0;i<ids.size();i++){
-        int id = ids.at(i);
-        text +=  QString("CURVE %1").arg(QString::number(id));
-        for(int j=0;j<curves_[id].size();j++)
-            text +=  QString(" %1").arg(QString::number(curves_[id].at(j)));
+    for(int i=0;i<curves_.size();i++){
+        text +=  QString("CURVE %1").arg(QString::number(i));
+        for(int j=0;j<curves_[i]->size();j++)
+            text +=  QString(" %1").arg(QString::number(curves_[i]->getPoint(j)->getID()));
         text += "\n";
-    }*/
+    }
+    if(poly_){
+        text +=  QString("POLYGON");
+        for(int i=0;i<poly_->size();i++)
+            text +=  QString(" %1").arg(QString::number(poly_->getPoint(i)->getID()));
+    }
+    text += "\n";
     return text;
 }
 

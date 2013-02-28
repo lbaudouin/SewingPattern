@@ -12,6 +12,8 @@ class MyPattern;
 
 #include "mypoint.h"
 #include "myedge.h"
+#include "mycurve.h"
+#include "mypolygon.h"
 
 class MyPattern : public QObject
 {
@@ -78,6 +80,7 @@ private:
 
     QList<MyPoint*> points_;
     QList<MyEdge*> edges_;
+    QList<MyCurve*> curves_;
     MyPolygon *poly_;
 
 public slots:

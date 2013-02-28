@@ -43,6 +43,7 @@ public:
     QRectF boundingRect() const;
 
     QPointF getPoint();
+    int getID() {return pointID_;}
 
     void setSrcEdge(MyEdge *edge);
     void setDestEdge(MyEdge *edge);
