@@ -143,3 +143,25 @@ QList<QPointF> MyPattern::getPoints()
         list << p.at(i);
     return list;
 }
+
+void MyPattern::hidePoints()
+{
+    QList<int> ids = pointsMap_.keys();
+    foreach(int id, ids)
+        pointsMap_[id]->hide();
+}
+
+void MyPattern::showPoints()
+{
+    QList<int> ids = pointsMap_.keys();
+    foreach(int id, ids)
+        pointsMap_[id]->show();
+}
+
+void MyPattern::setPointsVisible(bool visible)
+{
+    if(visible)
+        showPoints();
+    else
+        hidePoints();
+}

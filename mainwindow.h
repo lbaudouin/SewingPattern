@@ -51,6 +51,8 @@ private:
 
     QList<QGraphicsLineItem*> grids;
 
+    QAction *editAction,*linkAction;
+
 private slots:
     void pressTest();
     void pressSimu();
@@ -65,6 +67,9 @@ private slots:
     void actionClose();
     void actionMove();
     void actionTransform();
+
+    void toggleEdition();
+    void toggleLink();
 
 signals:
     void gridEnabled(bool state);

@@ -57,6 +57,11 @@ public:
     void setOrientation(double orientation) { orientation_ = orientation; }
     double getOrientation() { return orientation_; }
 
+    void hidePoints();
+    void showPoints();
+
+    void setPointsVisible(bool visible = true);
+
 private:
     int id_;
     QString name_;

@@ -7,15 +7,18 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     this->setWindowState(Qt::WindowMaximized);
-    {
-        QPushButton *button = new QPushButton("New Polygon");
-        ui->mainToolBar->addWidget(button);
-    }
-    {
-        QPushButton *button = new QPushButton("Connect");
-        connect(button,SIGNAL(clicked()),this,SLOT(connectEdges()));
-        ui->mainToolBar->addWidget(button);
-    }
+
+    editAction = ui->mainToolBar->addAction(QIcon("images/edit.png"),tr("Edition"),this,SLOT(toggleEdition()));
+    editAction->setCheckable(true);
+    editAction->setChecked(true);
+
+    linkAction = ui->mainToolBar->addAction(QIcon("images/needle.png"),tr("Link"),this,SLOT(toggleLink()));
+    linkAction->setCheckable(true);
+    linkAction->setChecked(false);
+
+    ui->mainToolBar->addAction(tr("New Polygon"));
+    ui->mainToolBar->addAction(tr("Connect"),this,SLOT(connectEdges()));
+
 
     gl = new GLWidget(0, 0);
     gl->setClearColor(QColor(225,255,255));
@@ -37,13 +40,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     Grid *grid = new Grid(scene);
     grid->hide();
-    {
-        QPushButton *button = new QPushButton("Grid");
-        button->setCheckable(true);
-        connect(button,SIGNAL(toggled(bool)),grid,SLOT(setVisible(bool)));
-        connect(button,SIGNAL(toggled(bool)),this,SLOT(enableGrid(bool)));
-        ui->mainToolBar->addWidget(button);
-    }
+
+    QAction *gridAction = ui->mainToolBar->addAction(QIcon("images/grid.png"),tr("Grid"));
+    gridAction->setCheckable(true);
+    connect(gridAction,SIGNAL(triggered(bool)),grid,SLOT(setVisible(bool)));
+    connect(gridAction,SIGNAL(triggered(bool)),this,SLOT(enableGrid(bool)));
 
     deleteAction = new QAction("Delete",this);
     connect(deleteAction,SIGNAL(triggered()),this,SLOT(actionDelete()));
@@ -104,6 +105,40 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::toggleEdition()
+{
+    if(!editAction->isChecked()){
+        //Can't uncheck
+        editAction->setChecked(true);
+        return;
+    }else{
+        linkAction->setChecked(false);
+    }
+
+    foreach(MyLink* link,links_)
+        link->hide();
+
+    foreach(MyPattern* pattern,patterns_)
+        pattern->setPointsVisible(editAction->isChecked());
+}
+
+void MainWindow::toggleLink()
+{
+    if(!linkAction->isChecked()){
+        //Can't uncheck
+        linkAction->setChecked(true);
+        return;
+    }else{
+        editAction->setChecked(false);
+    }
+
+    foreach(MyLink* link,links_)
+        link->show();
+
+    foreach(MyPattern* pattern,patterns_)
+        pattern->setPointsVisible(editAction->isChecked());
 }
 
 void MainWindow::connectEdges()
@@ -309,6 +344,15 @@ void MainWindow::loadFile(QString filename)
 
         if(pattern->isValid())
             patterns_.push_back(pattern);
+
+        if(editAction->isChecked())
+            foreach(MyLink* link,links_)
+                link->hide();
+
+        if(linkAction->isChecked())
+            foreach(MyPattern* pattern,patterns_)
+                pattern->hidePoints();
+
     }else{
         qDebug() << "Error on file loading";
     }
