@@ -1,5 +1,5 @@
 #include "meshing.h"
-#include "point2d.h"
+//#include "point2d.h"
 
 Meshing::Meshing(QPolygonF polyIn, double dist, QList<QPolygonF> polyOut) : original_(polyIn)
 {

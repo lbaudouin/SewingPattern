@@ -9,6 +9,8 @@
 #include <QDebug>
 #include <QGraphicsScene>
 
+#include <math.h>
+
 class Meshing
 {
 public:
