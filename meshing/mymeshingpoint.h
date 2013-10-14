@@ -11,7 +11,7 @@ class MyMeshingPoint
 {
 public:
     enum DOF {FREE = 0, CONSTANT, ONEDIRECTION};
-    MyMeshingPoint(QList<MyMeshingPoint*> *poly, QPointF pt, DOF dof = MyMeshingPoint::FREE, QLineF dir = QLineF());
+    MyMeshingPoint(QPointF pt, DOF dof = MyMeshingPoint::FREE, QLineF dir = QLineF());
     double getWeight(QPointF p);
     double getWeight(MyMeshingPoint &p);
     double getWeight(MyMeshingPoint *p);
@@ -20,12 +20,13 @@ public:
     void computeDisplacement();
     void addEdge(MyMeshingEdge *edge);
 
+    DOF getDOF();
+
 private:
     QPointF pt_;
     DOF dof_;
     QLineF dir_;
     QList<MyMeshingEdge*> edges_;
-    QList<MyMeshingPoint*> *poly_;
 };
 
 #endif // MYMESHINGPOINT_H

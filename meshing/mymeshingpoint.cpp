@@ -1,6 +1,6 @@
 #include "mymeshingpoint.h"
 
-MyMeshingPoint::MyMeshingPoint(QList<MyMeshingPoint*> *poly, QPointF pt, DOF dof, QLineF dir) : poly_(poly), pt_(pt), dof_(dof), dir_(dir)
+MyMeshingPoint::MyMeshingPoint( QPointF pt, DOF dof, QLineF dir) : pt_(pt), dof_(dof), dir_(dir)
 {
 
 }
@@ -21,6 +21,10 @@ double MyMeshingPoint::getWeight(MyMeshingPoint *p)
     return 0.0;
 }
 
+MyMeshingPoint::DOF MyMeshingPoint::getDOF()
+{
+    return dof_;
+}
 
 QPointF MyMeshingPoint::getPoint()
 {
@@ -29,15 +33,16 @@ QPointF MyMeshingPoint::getPoint()
 
 void MyMeshingPoint::computeDisplacement()
 {
+    QList<QPointF> list;
     if(dof_==CONSTANT)
         return;
 
     QPointF delta(0,0);
-    for(int i=0;i<poly_->size();i++){
-        if(poly_->at(i)==this)
+    for(int i=0;i<list.size();i++){
+        if(list.at(i)==pt_)
             continue;
 
-        QPointF pt = poly_->at(i)->getPoint();
+        QPointF pt = list.at(i);
         QLineF l = QLineF(pt,pt_);
         double d = l.length();
 

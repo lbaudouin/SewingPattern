@@ -50,12 +50,15 @@ MainWindow::MainWindow(QWidget *parent) :
     splitAction = new QAction("Split",this);
     connect(splitAction,SIGNAL(triggered()),this,SLOT(actionSplit()));
     transformAction = new QAction("Transform",this);
+    transformAction->setEnabled(false);
     connect(transformAction,SIGNAL(triggered()),this,SLOT(actionTransform()));
     closeAction = new QAction("Close Polygon",this);
+    closeAction->setEnabled(false);
     connect(closeAction,SIGNAL(triggered()),this,SLOT(actionClose()));
     swapAction = new QAction("Swap",this);
     connect(swapAction,SIGNAL(triggered()),this,SLOT(actionSwap()));
     moveAction = new QAction("Move",this);
+    moveAction->setEnabled(false);
     connect(moveAction,SIGNAL(triggered()),this,SLOT(actionMove()));
     renameAction = new QAction("Rename",this);
     connect(renameAction,SIGNAL(triggered()),this,SLOT(actionRename()));
@@ -93,6 +96,9 @@ MainWindow::MainWindow(QWidget *parent) :
     for(int i=0;i<patterns_.size();i++)
         patterns_.at(i)->display(scene);
 
+    for(int i=0;i<links_.size();i++)
+        links_.at(i)->display(scene);
+
 }
 
 MainWindow::~MainWindow()
@@ -108,10 +114,33 @@ void MainWindow::connectEdges()
     }else{
         MyEdge *e1 = qgraphicsitem_cast<MyEdge *>(items[0]);
         MyEdge *e2 = qgraphicsitem_cast<MyEdge *>(items[1]);
-        if(!e1 || !e2) {QMessageBox::warning(this,tr("Warning"),tr("You have to select 2 edges")); return;}
-        MyLink *link = new MyLink(e1,e2,linkMenu);
-        scene->addItem(link);
-        links_.push_back(link);
+        if(e1 && e2){
+            MyLink *link = new MyLink(e1,e2,linkMenu);
+            scene->addItem(link);
+            links_.push_back(link);
+            return;
+        }
+        MyPoint *p1 = qgraphicsitem_cast<MyPoint *>(items[0]);
+        MyPoint *p2 = qgraphicsitem_cast<MyPoint *>(items[1]);
+        if(p1 && p2){
+            if(p1->getPattern()==p2->getPattern()){
+                MyEdge *e = 0;
+                if(p1->getSrc()==0 && p2->getDest()==0)
+                    e = new MyEdge(p2,p1,p1->getPattern(),p1->getPattern()->getEmptyEdgeID(),edgeMenu);
+                if(p1->getDest()==0 && p2->getSrc()==0)
+                    e = new MyEdge(p1,p2,p1->getPattern(),p1->getPattern()->getEmptyEdgeID(),edgeMenu);
+                if(!e){
+                    return;
+                }
+                p1->getPattern()->addEdge(e);
+                scene->addItem(e);
+                return;
+            }else{
+                QMessageBox::warning(this,tr("Warning"),tr("You have to select 2 points from the same pattern"));
+                return;
+            }
+        }
+        QMessageBox::warning(this,tr("Warning"),tr("You have to select 2 edges or 2 points"));
     }
 }
 
@@ -122,18 +151,12 @@ void MainWindow::pressTest()
     polyDraw.clear();
 
     polys.clear();
-    //for(int i=0;i<allref.size();i++)
-    //    polys << allref.at(i)->getPoly();
 
     for(int i=0;i<patterns_.size();i++){
         polys << patterns_[i]->getPolygon();
     }
 
     for(int k=0;k<polys.size();k++){
-        /*QPolygonF poly;
-        for(int i=0;i<polys.at(k).size();i++)
-            poly << polys.at(k).at(i)->pos();*/
-
         Meshing mesh(polys.at(k),25.0);
         QList<QPolygonF> triangles = mesh.getMesh();
 
@@ -179,6 +202,13 @@ void MainWindow::loadFile(QString filename)
 
                 pattern = new MyPattern(id,name);
             }else
+            if(items.at(0)=="ORIENTATION"){
+                if(!pattern->isValid()){
+                    QMessageBox::critical(this,tr("Error"),tr("Invalid pattern on loading"));
+                    return;
+                }
+                pattern->setOrientation( items.at(1).toDouble() );
+            }else
             if(items.at(0)=="POINT"){
                 if(!pattern->isValid()){
                     QMessageBox::critical(this,tr("Error"),tr("Invalid pattern on loading"));
@@ -190,7 +220,6 @@ void MainWindow::loadFile(QString filename)
                 //pattern->addPoint(id,point);
 
                 MyPoint *pt = new MyPoint(point,pattern,id,nodeMenu);
-                connect(pt->widget,SIGNAL(moved(int,int,QPointF)),this,SLOT(pointMovedInScene(int,int,QPointF)));
                 connect(this,SIGNAL(gridEnabled(bool)),pt->widget,SLOT(setUseGrid(bool)));
 
                 pattern->addPoint(pt);
@@ -229,27 +258,53 @@ void MainWindow::loadFile(QString filename)
                     list << items.at(i).toInt();
                 //pattern->addCurve(id,list);
             }else
-                if(items.at(0)=="POLYGON"){
-                    if(!pattern->isValid()){
-                        QMessageBox::critical(this,tr("Error"),tr("Invalid pattern on loading"));
-                        return;
-                    }
-                    QList<int> list;
-                    for(int i=1;i<items.size();i++)
-                        list << items.at(i).toInt();
-
-                    MyPolygon *p = new MyPolygon(pattern,polyMenu);
-
-                    for(int i=0;i<list.size();i++){
-                        MyPoint *pt = pattern->getPoint(list.at(i));
-                        if(pt)
-                            p->addPoint( pt );
-                    }
-
-                    p->setColor(colors.at(nb++%colors.size()));
-
-                    pattern->setPolygon(p);
+            if(items.at(0)=="POLYGON"){
+                if(!pattern->isValid()){
+                    QMessageBox::critical(this,tr("Error"),tr("Invalid pattern on loading"));
+                    return;
                 }
+                QList<int> list;
+                for(int i=1;i<items.size();i++)
+                    list << items.at(i).toInt();
+
+                MyPolygon *p = new MyPolygon(pattern,polyMenu);
+
+                for(int i=0;i<list.size();i++){
+                    MyPoint *pt = pattern->getPoint(list.at(i));
+                    if(pt)
+                        p->addPoint( pt );
+                }
+
+                p->setColor(colors.at(nb++%colors.size()));
+
+                pattern->setPolygon(p);
+            }
+            if(items.at(0)=="LINK"){
+                if(pattern->isValid())
+                    patterns_.push_back(pattern);
+
+                pattern = new MyPattern(-1,"");
+
+                int p1 = items.at(1).toInt();
+                int e1 = items.at(2).toInt();
+                int p2 = items.at(3).toInt();
+                int e2 = items.at(4).toInt();
+                bool s = items.at(5)=="true"?true:false;
+                if(p1>=patterns_.size() || p2>=patterns_.size()){
+                    qDebug() << p1<<">="<<patterns_.size()<<" || "<<p2<<">="<<patterns_.size();
+                    qDebug() << "Invalid pattern";
+                    continue;
+                }
+                MyEdge* me1 = patterns_[p1]->getEdge(e1);
+                MyEdge* me2 = patterns_[p2]->getEdge(e2);
+                if(!me1 || !me2){
+                    qDebug() << "Invalid edge";
+                    continue;
+                }
+                MyLink* l = new MyLink(me1,me2,linkMenu);
+                l->object->setInverse(s);
+                links_.push_back(l);
+            }
         }
 
         if(pattern->isValid())
@@ -275,11 +330,6 @@ void MainWindow::saveFile(QString filename)
         out << links_.at(i)->getText();
     }
     file.close();
-}
-
-void MainWindow::pointMovedInScene(int patternID, int pointID, QPointF newPos)
-{
-    emit this->pointMoved(patternID,pointID,newPos);
 }
 
 void MainWindow::pressSimu()
@@ -352,18 +402,29 @@ void MainWindow::actionDelete()
     if(l!=0){
         l->remove();
         links_.removeAll(l);
+        delete l;
         return;
     }
     //If MyEdge
     MyPoint *p = qgraphicsitem_cast<MyPoint*>(items[0]);
     if(p!=0){
+        if(p->getSrc() && p->getDest()){
+            int id = p->getPattern()->getEmptyEdgeID();
+            MyEdge *e = new MyEdge(p->getSrc()->getSource(), p->getDest()->getDest(), p->getPattern(),id,edgeMenu);
+            p->getPattern()->addEdge(e);
+            scene->addItem(e);
+        }
         p->remove();
+        p->getPattern()->getPoly()->remove(p);
+
+        delete p;
         return;
     }
     //If MyEdge
     MyEdge *e = qgraphicsitem_cast<MyEdge*>(items[0]);
     if(e!=0){
         e->remove();
+        delete e;
         return;
     }
     //If MyPolygon
@@ -371,6 +432,7 @@ void MainWindow::actionDelete()
     if(po!=0){
         po->remove();
         patterns_.removeAll(po->getPattern());
+        delete po->getPattern();
         return;
     }
 }
@@ -403,5 +465,32 @@ void MainWindow::actionTransform()
 
 void MainWindow::actionSplit()
 {
+    QList<QGraphicsItem *> items = scene->selectedItems();
+    MyEdge *e = qgraphicsitem_cast<MyEdge*>(items[0]);
+    if(!e) return;
+    MyLink* l = e->removeLink();
+    links_.removeAll(l);
+    QPointF point = e->selectedPoint();
 
+    int pointID = e->getPattern()->getEmptyPointID();
+    MyPoint *pt = new MyPoint(point,e->getPattern(),pointID,nodeMenu);
+    connect(this,SIGNAL(gridEnabled(bool)),pt->widget,SLOT(setUseGrid(bool)));
+
+    e->getPattern()->addPoint(pt);
+    scene->addItem(pt);
+
+    int edgeID1 = e->getPattern()->getEmptyEdgeID();
+    MyEdge *e1 = new MyEdge(e->getSource(),pt,e->getPattern(),edgeID1,edgeMenu);
+    e->getPattern()->addEdge(e1);
+    scene->addItem(e1);
+
+    int edgeID2 = e->getPattern()->getEmptyEdgeID();
+    MyEdge *e2 = new MyEdge(pt,e->getDest(),e->getPattern(),edgeID2,edgeMenu);
+    e->getPattern()->addEdge(e2);
+    scene->addItem(e2);
+
+    e->getPattern()->getPoly()->insert(e->getSource(),e->getDest(),pt);
+    e->remove();
+
+    delete e;
 }

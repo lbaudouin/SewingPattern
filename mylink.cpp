@@ -1,9 +1,7 @@
 #include "mylink.h"
 
-MyLink::MyLink(MyEdge *src, MyEdge *dest, QMenu *contextMenu) : src_(0), dest_(0), object(new MyLinkObject)
+MyLink::MyLink(MyEdge *src, MyEdge *dest, QMenu *contextMenu) : src_(src), dest_(dest), object(new MyLinkObject)
 {
-    src_ = src;
-    dest_ = dest;
     src_->setLink(this);
     dest_->setLink(this);
     myContextMenu = contextMenu;
@@ -34,47 +32,36 @@ void MyLink::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     }
 
     if(object->show()){
-        QPointF a1,a2,a3,a4, b1,b2,b3,b4;
+        QPointF a1,a2,a3,a4,a5, b1,b2,b3,b4,b5;
         a1 = src_->getSourcePoint();
         a2 = 0.75*src_->getSourcePoint() + 0.25*src_->getDestPoint();
-        a3 = 0.25*src_->getSourcePoint() + 0.75*src_->getDestPoint();
-        a4 = src_->getDestPoint();
+        a3 = 0.5*src_->getSourcePoint() + 0.5*src_->getDestPoint();
+        a4 = 0.25*src_->getSourcePoint() + 0.75*src_->getDestPoint();
+        a5 = src_->getDestPoint();
         b1 = dest_->getSourcePoint();
         b2 = 0.75*dest_->getSourcePoint() + 0.25*dest_->getDestPoint();
-        b3 = 0.25*dest_->getSourcePoint() + 0.75*dest_->getDestPoint();
-        b4 = dest_->getDestPoint();
+        b3 = 0.5*dest_->getSourcePoint() + 0.5*dest_->getDestPoint();
+        b4 = 0.25*dest_->getSourcePoint() + 0.75*dest_->getDestPoint();
+        b5 = dest_->getDestPoint();
+        QPolygonF poly;
         if(object->inverse()){
-            painter->drawLine(QLineF(a1,b4));
-            painter->drawLine(QLineF(a2,b3));
-            painter->drawLine(QLineF(a3,b2));
-            painter->drawLine(QLineF(a4,b1));
+            poly << a1 << a5 << b1 << b5;
+            painter->drawLine(QLineF(a1,b5));
+            painter->drawLine(QLineF(a2,b4));
+            painter->drawLine(QLineF(a3,b3));
+            painter->drawLine(QLineF(a4,b2));
+            painter->drawLine(QLineF(a5,b1));
         }else{
+            poly << a1 << a5 << b5 << b1;
             painter->drawLine(QLineF(a1,b1));
             painter->drawLine(QLineF(a2,b2));
             painter->drawLine(QLineF(a3,b3));
             painter->drawLine(QLineF(a4,b4));
+            painter->drawLine(QLineF(a5,b5));
         }
 
-        poly1_.clear();
-        poly2_.clear();
-        poly1_ << a1 << a4 << b1 << b4;
-        poly2_ << a1 << a4 << b4 << b1;
+        setPolygon(poly);
     }
-}
-
-QRectF MyLink::boundingRect() const
-{
-    if (!src_ || !dest_)
-        return QRectF();
-
-    qreal extra = 1.0;
-
-    QPolygonF poly;
-    poly << src_->getSourcePoint() << src_->getDestPoint() << dest_->getSourcePoint() << dest_->getDestPoint() ;
-
-    return poly.boundingRect()
-        .normalized()
-        .adjusted(-extra, -extra, extra, extra);
 }
 
 void MyLink::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
@@ -82,15 +69,11 @@ void MyLink::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     if(myContextMenu==0){
         QGraphicsItem::contextMenuEvent(event);
         return;
-    }
-
-    QPointF pt = event->pos();
-    if(poly1_.containsPoint(pt,Qt::WindingFill) || poly2_.containsPoint(pt,Qt::WindingFill)){
+    }else{
         scene()->clearSelection();
         setSelected(true);
         myContextMenu->exec(event->screenPos());
-    }else{
-        QGraphicsItem::contextMenuEvent(event);
+        return;
     }
 }
 
@@ -101,9 +84,15 @@ void MyLink::adjust()
 
 QString MyLink::getText()
 {
-    int srcPattern = 0;
-    int srcEdge = 0;
-    int destPattern = 0;
-    int destEdge = 0;
-    return QString("%1 %2 %3 %4\n").arg(QString::number(srcPattern),QString::number(srcEdge),QString::number(destPattern),QString::number(destEdge));
+    int srcPattern = src_->getPattern()->getID();
+    int srcEdge = src_->getID();
+    int destPattern = dest_->getPattern()->getID();
+    int destEdge = dest_->getID();
+    bool swap = object->inverse();
+    return QString("LINK %1 %2 %3 %4 %5\n").arg(QString::number(srcPattern),QString::number(srcEdge),QString::number(destPattern),QString::number(destEdge),swap?"true":"false");
+}
+
+void MyLink::display(QGraphicsScene *scene)
+{
+    scene->addItem(this);
 }

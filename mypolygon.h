@@ -11,16 +11,17 @@
 #include <mypoint.h>
 #include <mypattern.h>
 
-class MyPolygon : public QGraphicsItem
+class MyPolygon : public QGraphicsPolygonItem
 {
 public:
     MyPolygon(MyPattern *pattern, QMenu *contextMenu = 0);
-    QRectF boundingRect() const;
 
     void setColor(QColor color);
-    void setPolygon(QPolygonF &poly);
+    //void setPolygon(QPolygonF &poly);
     void adjust();
     void addPoint(MyPoint *point);
+
+    void insert(MyPoint* p1, MyPoint* p2, MyPoint *p);
 
     MyPoint* getPoint(int index) {return points_.at(index);}
 
@@ -29,14 +30,14 @@ public:
 
     int size() { return points_.size(); }
 
-    QPolygonF getPolygon() {return poly_;}
+    QPolygonF getPoly();
 
     MyPattern* getPattern() {return pattern_;}
 
     void remove();
+    void remove(MyPoint *p);
 
 protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
@@ -44,7 +45,6 @@ private:
     QMenu *myContextMenu;
     MyPattern *pattern_;
     QList<MyPoint*> points_;
-    QPolygonF poly_;
 
     QColor color_;
 };

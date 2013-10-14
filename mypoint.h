@@ -40,8 +40,10 @@ class MyPoint : public QGraphicsItem
     //Q_OBJECT
 public:
     explicit MyPoint(QPointF pt, MyPattern *pattern, int pointID, QMenu *contextMenu = 0);
+    //~MyPoint() {qDebug()<<"~MyPoint()";}
     QRectF boundingRect() const;
 
+    MyPattern* getPattern() {return pattern_;}
     QPointF getPoint();
     int getID() {return pointID_;}
 
@@ -56,12 +58,14 @@ public:
     void setPolygon(MyPolygon* poly) { poly_ = poly; }
 
     void remove();
+
+    MyEdge* getSrc() {return srcEdge_;}
+    MyEdge* getDest() {return destEdge_;}
     
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private:

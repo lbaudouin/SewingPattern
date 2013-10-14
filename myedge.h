@@ -13,6 +13,7 @@
 
 class MyPoint;
 class MyEdge;
+class MyLink;
 
 #include "mypoint.h"
 #include "mylink.h"
@@ -35,16 +36,20 @@ public slots:
     void toggle() { inverse_ = !inverse_; }
 };
 
-class MyEdge : public QGraphicsItem
+class MyEdge : public QGraphicsLineItem
 {
 public:
     explicit MyEdge(MyPoint *src, MyPoint *dest, MyPattern *pattern, int edgeID, QMenu *contextMenu);
+    //~MyEdge() {qDebug()<<"~MyEdge()";}
     QRectF boundingRect() const;
 
     QPointF getSourcePoint();
     QPointF getDestPoint();
     MyPoint* getSource();
     MyPoint* getDest();
+
+    int getID() {return edgeID_;}
+    MyPattern* getPattern() {return pattern_;}
 
     QPointF proj(QPointF p);
     double distance(QPointF p);
@@ -55,6 +60,7 @@ public:
 
     MyEdgeObject* object;
 
+    MyLink* removeLink();
     void setLink(MyLink *link){
         link_ = link;
     }

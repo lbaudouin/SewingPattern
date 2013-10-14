@@ -7,29 +7,41 @@ MyEdge::MyEdge(MyPoint *src, MyPoint *dest, MyPattern *pattern, int edgeID, QMen
     src_->setDestEdge(this);
     dest_->setSrcEdge(this);
     myContextMenu = contextMenu;
-    setZValue(1);
+    setZValue(2);
     adjust();
     setFlag(QGraphicsItem::ItemIsSelectable, true);
 }
 
 void MyEdge::remove()
 {
-    src_ = 0;
-    dest_ = 0;
+    if(link_)
+        link_->remove();
+    if(stitchWith_)
+        stitchWith_ = 0;
     if(scene())
         scene()->removeItem(this);
+    if(src_)
+        src_->setDestEdge(0);
+    if(src_)
+        dest_->setSrcEdge(0);
+    src_ = 0;
+    dest_ = 0;
+    pattern_->removeEdge(this);
 }
 
 void MyEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
     Q_UNUSED(option);
+    QLineF l(src_->pos(),dest_->pos());
     if(isSelected()){
         painter->setPen( QPen(Qt::red,3) );
-        painter->drawLine(src_->pos(),dest_->pos());
     }else{
         painter->setPen(Qt::darkGreen);
-        painter->drawLine(src_->pos(),dest_->pos());
     }
+    painter->drawLine(l);
+    setLine(l);
+
+    //painter->drawText(this->boundingRect(), Qt::AlignCenter, QString::number(l.length()));
 }
 
 QRectF MyEdge::boundingRect() const
@@ -118,4 +130,11 @@ void MyEdge::adjust()
     prepareGeometryChange();
     if(link_!=0)
         link_->adjust();
+}
+
+MyLink* MyEdge::removeLink()
+{
+    MyLink* l = link_;
+    if(link_) link_->remove();
+    return l;
 }

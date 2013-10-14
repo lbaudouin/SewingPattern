@@ -1,10 +1,10 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-class engine
+class Engine
 {
 public:
-    engine();
+    Engine();
 };
 
 #endif // ENGINE_H

@@ -67,6 +67,7 @@ public:
     void remove();
 
     int size() {return points_.size();}
+    int getID() {return curveID_;}
 
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

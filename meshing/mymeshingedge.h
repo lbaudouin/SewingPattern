@@ -14,6 +14,8 @@ public:
     double getWeight(MyMeshingPoint &p);
     double getWeight(MyMeshingPoint *p);
     double getLenght();
+    void split();
+    QLineF getLineF();
 private:
     MyMeshingPoint *p1_,*p2_;
     MyMeshingTriangle *t1_,*t2_;

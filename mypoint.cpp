@@ -2,7 +2,7 @@
 
 MyPoint::MyPoint(QPointF pt, MyPattern *pattern, int pointID, QMenu *contextMenu) : pt_(pt), srcEdge_(NULL), destEdge_(NULL), pattern_(pattern), pointID_(pointID), select_(false)
 {
-    widget = new MyPointWidget(-1,pointID);
+    widget = new MyPointWidget(pattern_->getID(),pointID);
     myContextMenu = contextMenu;
     poly_ = pattern_->getPoly();
     setFlag(QGraphicsItem::ItemIsMovable, true);
@@ -13,7 +13,7 @@ MyPoint::MyPoint(QPointF pt, MyPattern *pattern, int pointID, QMenu *contextMenu
 }
 
 void MyPoint::remove()
-{
+{  
     if(srcEdge_){
         srcEdge_->remove();
         srcEdge_ = 0;
@@ -24,31 +24,30 @@ void MyPoint::remove()
     }
     if(scene())
         scene()->removeItem(this);
+    pattern_->removePoint(this);
 }
 
 void MyPoint::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
     Q_UNUSED(option);
     painter->setPen(Qt::NoPen);
-    QColor color(Qt::red);
-    if( select_ ){
-        color.setAlpha(125);
+    if( isSelected() ){
+        painter->setBrush(Qt::darkRed);
+    }else{
+        painter->setBrush(Qt::red);
     }
-    painter->setBrush(color);
-    painter->drawEllipse(-10, -10, 20, 20);
-    painter->drawText(this->boundingRect(),Qt::AlignCenter,QString::number(pointID_));
-}
+    painter->drawEllipse(-5, -5, 10, 10);
 
-void MyPoint::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-    select_ = true;
-    this->update();
-    QGraphicsItem::mousePressEvent(event);
+    /*QFont font = QApplication::font();
+    font.setPixelSize( 8 );
+    painter->setFont( font );
+    painter->setBrush(Qt::NoBrush);
+    painter->setPen(Qt::black);
+    painter->drawText(QRect(-5,-5,10,10),Qt::AlignCenter,QString::number(pointID_));*/
 }
 
 void MyPoint::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    select_ = false;
 
     if(widget->useGrid()){
         int gridSize = widget->gridSize();
@@ -64,8 +63,8 @@ void MyPoint::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 QRectF MyPoint::boundingRect() const
 {
     qreal adjust = 2;
-    return QRectF( -10 - adjust, -10 - adjust,
-                  20 + adjust, 20 + adjust);
+    return QRectF( -5 - adjust, -5 - adjust,
+                  10 + adjust, 10 + adjust);
 }
 
 void MyPoint::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)

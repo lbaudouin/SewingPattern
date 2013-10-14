@@ -6,7 +6,7 @@
 
 QT       += core gui opengl
 
-TARGET = Pattern
+TARGET = sewingpattern
 TEMPLATE = app
 
 

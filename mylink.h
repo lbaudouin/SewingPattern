@@ -19,15 +19,17 @@ public slots:
     void showStich(){ show_ = true; }
     void hideStich(){ show_ = false; }
     void setStichVisible(bool visibility) { show_ = visibility; }
+    void setInverse(bool inverse) { inverse_ = inverse; }
     void toggle() { inverse_ = !inverse_; }
 };
 
-class MyLink : public QGraphicsItem
+class MyLink : public QGraphicsPolygonItem
 {
 public:
     explicit MyLink(MyEdge *src, MyEdge *dest, QMenu *contextMenu);
-    QRectF boundingRect() const;
+    //~MyLink() {qDebug()<<"~MyLink()";}
     void adjust();
+    void display(QGraphicsScene *scene);
 
     MyLinkObject* object;
 
@@ -45,7 +47,6 @@ protected:
 private:
     MyEdge *src_,*dest_;
     QMenu *myContextMenu;
-    QPolygonF poly1_,poly2_;
 };
 
 #endif // MYLINK_H

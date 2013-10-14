@@ -55,7 +55,6 @@ private slots:
     void pressTest();
     void pressSimu();
     void pressSave();
-    void pointMovedInScene(int patternID, int pointID, QPointF newPos);
     void enableGrid(bool state);
     void connectEdges();
 
@@ -68,7 +67,6 @@ private slots:
     void actionTransform();
 
 signals:
-    void pointMoved(int patternID, int pointID, QPointF newPos);
     void gridEnabled(bool state);
 };
 
