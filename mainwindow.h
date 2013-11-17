@@ -17,6 +17,8 @@
 #include "engine.h"
 #include "grid.h"
 
+#include "inputfile.h"
+
 namespace Ui {
 class MainWindow;
 }

@@ -100,6 +100,9 @@ MainWindow::MainWindow(QWidget *parent) :
     for(int i=0;i<links_.size();i++)
         links_.at(i)->display(scene);
 
+    InputFile file;
+    file.save("test.xml");
+
 }
 
 MainWindow::~MainWindow()

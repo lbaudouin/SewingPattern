@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui opengl
+QT       += core gui opengl xml
 
 TARGET = sewingpattern
 TEMPLATE = app
@@ -28,7 +28,9 @@ SOURCES += main.cpp\
     meshing/mymeshingpolygon.cpp \
     meshing/mymeshingtriangle.cpp \
     mylink.cpp \
-    mycurve.cpp
+    mycurve.cpp \
+    readwritexml.cpp \
+    inputfile.cpp
 
 HEADERS  += mainwindow.h \
     meshing/meshing.h \
@@ -47,7 +49,9 @@ HEADERS  += mainwindow.h \
     meshing/mymeshingpolygon.h \
     meshing/mymeshingtriangle.h \
     mylink.h \
-    mycurve.h
+    mycurve.h \
+    readwritexml.h \
+    inputfile.h
 
 FORMS    += mainwindow.ui
 
