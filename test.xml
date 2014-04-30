@@ -1,14 +1,14 @@
 <pattern>
- <version>0.0.1</version>
+ <version>1</version>
  <author>me</author>
  <title>My Pattern</title>
- <face name="Manche" color="#852503" orientation="0,125">
-  <point1>(0,0)</point1>
+ <face name="Manche" color="#9392fc" orientation="0,125">
+  <point>(0,0)</point>
  </face>
- <face name="Dos" color="#8657bf" orientation="0,125">
-  <point1>(0,0)</point1>
+ <face name="Dos" color="#9ce9f9" orientation="0,125">
+  <point>(0,0)</point>
  </face>
- <face name="Col" color="#ddda12" orientation="0,125">
-  <point1>(0,0)</point1>
+ <face name="Col" color="#d06504" orientation="0,125">
+  <point>(0,0)</point>
  </face>
 </pattern>
