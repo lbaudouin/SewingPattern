@@ -9,7 +9,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
     if(event->button()==Qt::MiddleButton){
         setCursor(Qt::OpenHandCursor);
-        pt_ = event->posF();
+        pt_ = event->localPos();
         myDragMode = true;
     }else{
         QGraphicsView::mousePressEvent(event);
@@ -28,7 +28,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     if(myDragMode){
         QPointF delta = event->pos() - pt_;
-        pt_ = event->posF();
+        pt_ = event->localPos();
         horizontalScrollBar()->setValue(horizontalScrollBar()->value() - delta.x());
         verticalScrollBar()->setValue(verticalScrollBar()->value() - delta.y());
     }else{

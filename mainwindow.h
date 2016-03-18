@@ -5,6 +5,7 @@
 #include "meshing/meshing.h"
 #include "patternscene.h"
 #include <QDebug>
+#include <QInputDialog>
 
 #include "graphicsview.h"
 #include "mypattern.h"
