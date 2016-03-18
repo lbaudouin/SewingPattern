@@ -8,16 +8,22 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     this->setWindowState(Qt::WindowMaximized);
 
-    editAction = ui->mainToolBar->addAction(QIcon("images/edit.png"),tr("Edition"),this,SLOT(toggleEdition()));
+    ui->mainToolBar->hide();
+
+    QToolBar *drawToolBar = new QToolBar;
+    drawToolBar->setToolButtonStyle(Qt::ToolButtonFollowStyle);
+    ui->drawLayout->insertWidget(0,drawToolBar);
+
+    editAction = drawToolBar->addAction(QIcon("images/edit.png"),tr("Edition"),this,SLOT(toggleEdition()));
     editAction->setCheckable(true);
     editAction->setChecked(true);
 
-    linkAction = ui->mainToolBar->addAction(QIcon("images/needle.png"),tr("Link"),this,SLOT(toggleLink()));
+    linkAction = drawToolBar->addAction(QIcon("images/needle.png"),tr("Link"),this,SLOT(toggleLink()));
     linkAction->setCheckable(true);
     linkAction->setChecked(false);
 
-    ui->mainToolBar->addAction(tr("New Polygon"));
-    ui->mainToolBar->addAction(tr("Connect"),this,SLOT(connectEdges()));
+    drawToolBar->addAction(tr("New Polygon"));
+    drawToolBar->addAction(tr("Connect"),this,SLOT(connectEdges()));
 
 
     gl = new GLWidget(0, 0);
@@ -41,7 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
     Grid *grid = new Grid(scene);
     grid->hide();
 
-    QAction *gridAction = ui->mainToolBar->addAction(QIcon("images/grid.png"),tr("Grid"));
+    QAction *gridAction = drawToolBar->addAction(QIcon("images/grid.png"),tr("Grid"));
     gridAction->setCheckable(true);
     connect(gridAction,SIGNAL(triggered(bool)),grid,SLOT(setVisible(bool)));
     connect(gridAction,SIGNAL(triggered(bool)),this,SLOT(enableGrid(bool)));
@@ -101,6 +107,7 @@ MainWindow::MainWindow(QWidget *parent) :
         links_.at(i)->display(scene);
 
     InputFile file;
+    file.load("test.xml");
     file.save("test.xml");
 
 }

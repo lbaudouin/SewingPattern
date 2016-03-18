@@ -55,4 +55,4 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
-OTHER_FILES += test.txt
+OTHER_FILES += test.txt test.xml

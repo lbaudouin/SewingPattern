@@ -24,9 +24,12 @@
        <attribute name="title">
         <string>Drawing</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <layout class="QVBoxLayout" name="drawLayout">
         <item>
          <widget class="GraphicsView" name="graphicsView"/>
+        </item>
+        <item>
+         <widget class="QWidget" name="widget" native="true"/>
         </item>
        </layout>
       </widget>

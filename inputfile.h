@@ -5,6 +5,8 @@
 #include <QDesktopServices>
 #include <QDir>
 
+#include <QDebug>
+
 class InputFile : public ReadWriteXML
 {
     Q_OBJECT

@@ -15,11 +15,29 @@ void InputFile::read(QDomDocument *dom, QFileInfo)
         {
             QDomElement element = node.toElement();
 
-            if(element.tagName()=="file"){
-                element.attribute("title",tr("empty_title"));
-                element.attribute("artist",tr("empty_artist"));
-                element.attribute("path","");
-                element.attribute("wasOpen","false")=="true";
+            if(element.tagName()=="version"){
+                qDebug() << "version:" << element.text();
+            }
+            if(element.tagName()=="author"){
+                qDebug() << "author:" << element.text();
+            }
+            if(element.tagName()=="title"){
+                qDebug() << "title:" << element.text();
+            }
+            if(element.tagName()=="face"){
+                qDebug() << element.attribute("name",tr("name"));
+                qDebug() << element.attribute("color",QColor(qrand()%255,qrand()%255,qrand()%255).name());
+                qDebug() << element.attribute("orientation",QString::number(-1));
+
+                QDomNode childNode = element.firstChild();
+                while(!childNode.isNull())
+                {
+                    QDomElement childElement = childNode.toElement();
+                    if(childElement.tagName()=="point"){
+                        qDebug() << "point:" << childElement.text();
+                    }
+                    childNode = childNode.nextSibling();
+                }
             }
             node = node.nextSibling();
         }
@@ -31,7 +49,7 @@ void InputFile::write(QDomDocument *dom, QFileInfo)
     QDomElement mainNode = dom->createElement("pattern");
     dom->appendChild(mainNode);
 
-    addNode(dom,&mainNode,"version","0.0.1");
+    addNode(dom,&mainNode,"version","1");
     addNode(dom,&mainNode,"author","me");
     addNode(dom,&mainNode,"title","My Pattern");
 
@@ -45,7 +63,7 @@ void InputFile::write(QDomDocument *dom, QFileInfo)
         elem.setAttribute("color",QColor(qrand()%255,qrand()%255,qrand()%255).name());
         elem.setAttribute("orientation",0.125);
 
-        addNode(dom,&elem,"point1","(0,0)");
+        addNode(dom,&elem,"point","(0,0)");
         mainNode.appendChild(elem);
     }
 }
